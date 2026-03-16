@@ -35,6 +35,14 @@ const EMPTY_ROLE_CONFIG = {
   villageois: 0,
 }
 
+const STORAGE_KEYS = {
+  sessionId: "lg_session_id",
+  gameId: "lg_game_id",
+  entryMode: "lg_entry_mode",
+  playerName: "lg_player_name",
+  hostName: "lg_host_name",
+}
+
 function App() {
   const [entryMode, setEntryMode] = useState("")
   const [hostName, setHostName] = useState("")
@@ -56,10 +64,10 @@ function App() {
   }
 
   function getSessionId() {
-    let sessionId = sessionStorage.getItem("lg_session_id")
+    let sessionId = localStorage.getItem(STORAGE_KEYS.sessionId)
     if (!sessionId) {
       sessionId = crypto.randomUUID()
-      sessionStorage.setItem("lg_session_id", sessionId)
+      localStorage.setItem(STORAGE_KEYS.sessionId, sessionId)
     }
     return sessionId
   }
@@ -68,7 +76,32 @@ function App() {
     return name.trim().toLowerCase()
   }
 
+  function persistGameSession({ gameId, mode, playerNameValue = "", hostNameValue = "" }) {
+    localStorage.setItem(STORAGE_KEYS.gameId, String(gameId))
+    localStorage.setItem(STORAGE_KEYS.entryMode, mode)
+
+    if (playerNameValue) {
+      localStorage.setItem(STORAGE_KEYS.playerName, playerNameValue)
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.playerName)
+    }
+
+    if (hostNameValue) {
+      localStorage.setItem(STORAGE_KEYS.hostName, hostNameValue)
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.hostName)
+    }
+  }
+
+  function clearPersistedGameSession() {
+    localStorage.removeItem(STORAGE_KEYS.gameId)
+    localStorage.removeItem(STORAGE_KEYS.entryMode)
+    localStorage.removeItem(STORAGE_KEYS.playerName)
+    localStorage.removeItem(STORAGE_KEYS.hostName)
+  }
+
   function goToHome() {
+    clearPersistedGameSession()
     setEntryMode("")
     setHostName("")
     setPlayerName("")
@@ -76,6 +109,7 @@ function App() {
     setMessage("")
     setCurrentGame(null)
     setPlayers([])
+    setMySessionId("")
     setExpectedPlayers(4)
     setRoleConfig({
       ...EMPTY_ROLE_CONFIG,
@@ -226,6 +260,13 @@ function App() {
     }
 
     const game = gameData[0]
+
+    persistGameSession({
+      gameId: game.id,
+      mode: "host",
+      hostNameValue: hostName.trim(),
+    })
+
     setCurrentGame(game)
     setMessage("Partie créée avec succès")
     await loadPlayers(game.id)
@@ -283,6 +324,24 @@ function App() {
       return
     }
 
+    const existingSameSessionPlayer = existingPlayers.find(
+      (p) => p.session_id === sessionId
+    )
+
+    if (existingSameSessionPlayer) {
+      persistGameSession({
+        gameId: game.id,
+        mode: "player",
+        playerNameValue: existingSameSessionPlayer.name,
+      })
+
+      setPlayerName(existingSameSessionPlayer.name)
+      setCurrentGame(game)
+      setMessage("Session restaurée dans la partie")
+      await loadPlayers(game.id)
+      return
+    }
+
     if (existingPlayers.length >= game.expected_players) {
       setMessage("Cette partie est complète")
       return
@@ -294,13 +353,6 @@ function App() {
 
     if (duplicateName) {
       setMessage("Ce nom est déjà utilisé dans la partie")
-      return
-    }
-
-    const duplicateSession = existingPlayers.some((p) => p.session_id === sessionId)
-
-    if (duplicateSession) {
-      setMessage("Cette fenêtre a déjà rejoint la partie")
       return
     }
 
@@ -321,6 +373,12 @@ function App() {
       setMessage("Erreur lors de l’ajout du joueur")
       return
     }
+
+    persistGameSession({
+      gameId: game.id,
+      mode: "player",
+      playerNameValue: playerName.trim(),
+    })
 
     setCurrentGame(game)
     setMessage("Tu as rejoint la partie avec succès")
@@ -502,8 +560,6 @@ function App() {
       return
     }
 
-    const suggested = generateSuggestedRoles(expectedPlayers)
-
     const { error: deletePlayersError } = await supabase
       .from("players")
       .delete()
@@ -526,9 +582,62 @@ function App() {
       return
     }
 
-    setRoleConfig(suggested)
     goToHome()
   }
+
+  useEffect(() => {
+    async function restoreSession() {
+      const savedGameId = localStorage.getItem(STORAGE_KEYS.gameId)
+      const savedEntryMode = localStorage.getItem(STORAGE_KEYS.entryMode)
+      const savedPlayerName = localStorage.getItem(STORAGE_KEYS.playerName) || ""
+      const savedHostName = localStorage.getItem(STORAGE_KEYS.hostName) || ""
+
+      const sessionId = getSessionId()
+      setMySessionId(sessionId)
+
+      if (!savedGameId || !savedEntryMode) return
+
+      const { data: game, error: gameError } = await supabase
+        .from("games")
+        .select("*")
+        .eq("id", savedGameId)
+        .single()
+
+      if (gameError || !game) {
+        clearPersistedGameSession()
+        return
+      }
+
+      if (savedEntryMode === "player") {
+        const { data: player, error: playerError } = await supabase
+          .from("players")
+          .select("*")
+          .eq("game_id", game.id)
+          .eq("session_id", sessionId)
+          .maybeSingle()
+
+        if (playerError || !player) {
+          clearPersistedGameSession()
+          return
+        }
+
+        setPlayerName(savedPlayerName || player.name || "")
+        setEntryMode("player")
+        setCurrentGame(game)
+        await loadPlayers(game.id)
+        return
+      }
+
+      if (savedEntryMode === "host") {
+        setHostName(savedHostName || game.host_name || "")
+        setEntryMode("host")
+        setCurrentGame(game)
+        await loadPlayers(game.id)
+      }
+    }
+
+    restoreSession()
+  }, [])
 
   useEffect(() => {
     if (!currentGame) return
@@ -646,7 +755,9 @@ function App() {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "980px", margin: "0 auto" }}>
-            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+              Loup-Garou
+            </h1>
 
             <div style={panelStyle}>
               <h2>Salle d’attente maître du jeu</h2>
@@ -759,7 +870,9 @@ function App() {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+              Loup-Garou
+            </h1>
 
             <div style={panelStyle}>
               <h2>Interface maître du jeu</h2>
@@ -826,7 +939,9 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "850px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+            Loup-Garou
+          </h1>
 
           <div style={panelStyle}>
             <h2>{isLobby ? "Salle d’attente" : "Interface joueur"}</h2>
@@ -861,7 +976,13 @@ function App() {
             )}
 
             {me && (
-              <p style={{ marginTop: "10px", fontWeight: "bold", color: me.alive ? "lightgreen" : "#ff6b57" }}>
+              <p
+                style={{
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  color: me.alive ? "lightgreen" : "#ff6b57",
+                }}
+              >
                 Tu es {me.alive ? "vivant" : "mort"}
               </p>
             )}
@@ -891,7 +1012,9 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+            Loup-Garou
+          </h1>
 
           <div style={panelStyle}>
             <h2>Entrer comme maître du jeu</h2>
@@ -926,7 +1049,9 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+            Loup-Garou
+          </h1>
 
           <div style={panelStyle}>
             <h2>Entrer comme joueur</h2>
