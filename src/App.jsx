@@ -68,6 +68,22 @@ function App() {
     return name.trim().toLowerCase()
   }
 
+  function goToHome() {
+    setEntryMode("")
+    setHostName("")
+    setPlayerName("")
+    setJoinCode("")
+    setMessage("")
+    setCurrentGame(null)
+    setPlayers([])
+    setExpectedPlayers(4)
+    setRoleConfig({
+      ...EMPTY_ROLE_CONFIG,
+      loup: 1,
+      villageois: 3,
+    })
+  }
+
   const totalConfiguredRoles = useMemo(() => {
     return Object.values(roleConfig).reduce((sum, value) => sum + value, 0)
   }, [roleConfig])
@@ -482,7 +498,7 @@ function App() {
     if (!currentGame) return
 
     if (entryMode !== "host") {
-      setMessage("Seul le maître du jeu peut relancer une partie")
+      goToHome()
       return
     }
 
@@ -499,30 +515,19 @@ function App() {
       return
     }
 
-    const { data, error: gameError } = await supabase
+    const { error: deleteGameError } = await supabase
       .from("games")
-      .update({
-        status: "lobby",
-        winner: null,
-        started_at: null,
-        ended_at: null,
-        expected_players: expectedPlayers,
-        role_config: suggested,
-      })
+      .delete()
       .eq("id", currentGame.id)
-      .select()
-      .single()
 
-    if (gameError) {
-      console.error(gameError)
-      setMessage("Erreur lors de la nouvelle partie")
+    if (deleteGameError) {
+      console.error(deleteGameError)
+      setMessage("Erreur lors de la réinitialisation de la partie")
       return
     }
 
     setRoleConfig(suggested)
-    setCurrentGame(data)
-    setPlayers([])
-    setMessage("Nouvelle partie prête")
+    goToHome()
   }
 
   useEffect(() => {
@@ -568,6 +573,8 @@ function App() {
                 ...data.role_config,
               })
             }
+          } else {
+            goToHome()
           }
         }
       )
@@ -631,7 +638,6 @@ function App() {
   }
 
   if (currentGame) {
-    const currentRoleConfig = currentGame.role_config || {}
     const isLobby = currentGame.status === "lobby"
     const isStarted = currentGame.status === "started"
     const isEnded = currentGame.status === "ended"
@@ -866,6 +872,14 @@ function App() {
               </p>
             )}
 
+            {isEnded && (
+              <div style={{ marginTop: "20px" }}>
+                <button onClick={goToHome} style={buttonStyle}>
+                  Nouvelle partie
+                </button>
+              </div>
+            )}
+
             {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
           </div>
         </div>
@@ -895,10 +909,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => {
-                setEntryMode("")
-                setMessage("")
-              }}
+              onClick={goToHome}
               style={{ ...secondaryButtonStyle, marginLeft: "10px" }}
             >
               Retour
@@ -941,10 +952,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => {
-                setEntryMode("")
-                setMessage("")
-              }}
+              onClick={goToHome}
               style={{ ...secondaryButtonStyle, marginLeft: "10px" }}
             >
               Retour
