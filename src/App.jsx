@@ -64,10 +64,10 @@ function App() {
   }
 
   function getSessionId() {
-    let sessionId = localStorage.getItem(STORAGE_KEYS.sessionId)
+    let sessionId = sessionStorage.getItem(STORAGE_KEYS.sessionId)
     if (!sessionId) {
       sessionId = crypto.randomUUID()
-      localStorage.setItem(STORAGE_KEYS.sessionId, sessionId)
+      sessionStorage.setItem(STORAGE_KEYS.sessionId, sessionId)
     }
     return sessionId
   }
@@ -77,27 +77,27 @@ function App() {
   }
 
   function persistGameSession({ gameId, mode, playerNameValue = "", hostNameValue = "" }) {
-    localStorage.setItem(STORAGE_KEYS.gameId, String(gameId))
-    localStorage.setItem(STORAGE_KEYS.entryMode, mode)
+    sessionStorage.setItem(STORAGE_KEYS.gameId, String(gameId))
+    sessionStorage.setItem(STORAGE_KEYS.entryMode, mode)
 
     if (playerNameValue) {
-      localStorage.setItem(STORAGE_KEYS.playerName, playerNameValue)
+      sessionStorage.setItem(STORAGE_KEYS.playerName, playerNameValue)
     } else {
-      localStorage.removeItem(STORAGE_KEYS.playerName)
+      sessionStorage.removeItem(STORAGE_KEYS.playerName)
     }
 
     if (hostNameValue) {
-      localStorage.setItem(STORAGE_KEYS.hostName, hostNameValue)
+      sessionStorage.setItem(STORAGE_KEYS.hostName, hostNameValue)
     } else {
-      localStorage.removeItem(STORAGE_KEYS.hostName)
+      sessionStorage.removeItem(STORAGE_KEYS.hostName)
     }
   }
 
   function clearPersistedGameSession() {
-    localStorage.removeItem(STORAGE_KEYS.gameId)
-    localStorage.removeItem(STORAGE_KEYS.entryMode)
-    localStorage.removeItem(STORAGE_KEYS.playerName)
-    localStorage.removeItem(STORAGE_KEYS.hostName)
+    sessionStorage.removeItem(STORAGE_KEYS.gameId)
+    sessionStorage.removeItem(STORAGE_KEYS.entryMode)
+    sessionStorage.removeItem(STORAGE_KEYS.playerName)
+    sessionStorage.removeItem(STORAGE_KEYS.hostName)
   }
 
   function goToHome() {
@@ -219,6 +219,7 @@ function App() {
         ended_at: new Date().toISOString(),
       })
       .eq("id", gameId)
+      .eq("host_session_id", mySessionId)
 
     if (error) {
       console.error(error)
@@ -269,6 +270,11 @@ function App() {
     })
 
     setCurrentGame(game)
+    setExpectedPlayers(game.expected_players || 4)
+    setRoleConfig({
+      ...EMPTY_ROLE_CONFIG,
+      ...(game.role_config || {}),
+    })
     setMessage("Partie créée avec succès")
     await loadPlayers(game.id)
   }
@@ -287,7 +293,6 @@ function App() {
     }
 
     const sessionId = getSessionId()
-
     setMySessionId(sessionId)
 
     const { data: games, error: gameError } = await supabase
@@ -308,7 +313,7 @@ function App() {
 
     const game = games[0]
 
-    if (game.host_session_id && game.host_session_id === sessionId) {
+    if (game.host_session_id === sessionId) {
       persistGameSession({
         gameId: game.id,
         mode: "host",
@@ -325,44 +330,6 @@ function App() {
       })
       setMessage("Session maître du jeu restaurée")
       await loadPlayers(game.id)
-      return
-    }
-
-    if (game.status !== "lobby") {
-      const { data: existingPlayerInStartedGame, error: startedPlayerError } = await supabase
-        .from("players")
-        .select("*")
-        .eq("game_id", game.id)
-        .eq("session_id", sessionId)
-        .maybeSingle()
-
-      if (startedPlayerError) {
-        console.error(startedPlayerError)
-        setMessage("Erreur lors de la vérification de la session")
-        return
-      }
-
-      if (existingPlayerInStartedGame) {
-        persistGameSession({
-          gameId: game.id,
-          mode: "player",
-          playerNameValue: existingPlayerInStartedGame.name,
-        })
-
-        setPlayerName(existingPlayerInStartedGame.name)
-        setEntryMode("player")
-        setCurrentGame(game)
-        setExpectedPlayers(game.expected_players || 4)
-        setRoleConfig({
-          ...EMPTY_ROLE_CONFIG,
-          ...(game.role_config || {}),
-        })
-        setMessage("Session restaurée dans la partie")
-        await loadPlayers(game.id)
-        return
-      }
-
-      setMessage("La partie a déjà commencé ou est terminée")
       return
     }
 
@@ -398,6 +365,11 @@ function App() {
       })
       setMessage("Session restaurée dans la partie")
       await loadPlayers(game.id)
+      return
+    }
+
+    if (game.status !== "lobby") {
+      setMessage("La partie a déjà commencé ou est terminée")
       return
     }
 
@@ -660,10 +632,10 @@ function App() {
 
   useEffect(() => {
     async function restoreSession() {
-      const savedGameId = localStorage.getItem(STORAGE_KEYS.gameId)
-      const savedEntryMode = localStorage.getItem(STORAGE_KEYS.entryMode)
-      const savedPlayerName = localStorage.getItem(STORAGE_KEYS.playerName) || ""
-      const savedHostName = localStorage.getItem(STORAGE_KEYS.hostName) || ""
+      const savedGameId = sessionStorage.getItem(STORAGE_KEYS.gameId)
+      const savedEntryMode = sessionStorage.getItem(STORAGE_KEYS.entryMode)
+      const savedPlayerName = sessionStorage.getItem(STORAGE_KEYS.playerName) || ""
+      const savedHostName = sessionStorage.getItem(STORAGE_KEYS.hostName) || ""
 
       const sessionId = getSessionId()
       setMySessionId(sessionId)
@@ -682,7 +654,7 @@ function App() {
       }
 
       if (savedEntryMode === "host") {
-        if (!game.host_session_id || game.host_session_id !== sessionId) {
+        if (game.host_session_id !== sessionId) {
           clearPersistedGameSession()
           return
         }
