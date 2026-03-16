@@ -246,6 +246,7 @@ function App() {
         {
           code,
           host_name: hostName.trim(),
+          host_session_id: sessionId,
           status: "lobby",
           expected_players: expectedPlayers,
           role_config: roleConfig,
@@ -313,6 +314,21 @@ function App() {
       return
     }
 
+    if (game.host_session_id && game.host_session_id === sessionId) {
+      persistGameSession({
+        gameId: game.id,
+        mode: "host",
+        hostNameValue: game.host_name || "",
+      })
+
+      setHostName(game.host_name || "")
+      setEntryMode("host")
+      setCurrentGame(game)
+      setMessage("Session maître du jeu restaurée")
+      await loadPlayers(game.id)
+      return
+    }
+
     const { data: existingPlayers, error: playersError } = await supabase
       .from("players")
       .select("*")
@@ -336,6 +352,7 @@ function App() {
       })
 
       setPlayerName(existingSameSessionPlayer.name)
+      setEntryMode("player")
       setCurrentGame(game)
       setMessage("Session restaurée dans la partie")
       await loadPlayers(game.id)
@@ -388,6 +405,11 @@ function App() {
   async function saveHostConfiguration() {
     if (!currentGame) return
 
+    if (entryMode !== "host") {
+      setMessage("Seul le maître du jeu peut modifier la configuration")
+      return
+    }
+
     if (expectedPlayers < 4) {
       setMessage("Le nombre minimum de joueurs est 4")
       return
@@ -405,6 +427,7 @@ function App() {
         role_config: roleConfig,
       })
       .eq("id", currentGame.id)
+      .eq("host_session_id", mySessionId)
       .select()
       .single()
 
@@ -423,6 +446,11 @@ function App() {
 
     if (entryMode !== "host") {
       setMessage("Seul le maître du jeu peut lancer la partie")
+      return
+    }
+
+    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
+      setMessage("Session maître du jeu invalide")
       return
     }
 
@@ -490,6 +518,7 @@ function App() {
         ended_at: null,
       })
       .eq("id", currentGame.id)
+      .eq("host_session_id", mySessionId)
       .select()
       .single()
 
@@ -508,6 +537,11 @@ function App() {
 
     if (entryMode !== "host") {
       setMessage("Seul le maître du jeu peut gérer les morts")
+      return
+    }
+
+    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
+      setMessage("Session maître du jeu invalide")
       return
     }
 
@@ -548,6 +582,11 @@ function App() {
       return
     }
 
+    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
+      setMessage("Session maître du jeu invalide")
+      return
+    }
+
     await updateGameEnded(currentGame.id, winner)
     setMessage("Partie terminée")
   }
@@ -557,6 +596,11 @@ function App() {
 
     if (entryMode !== "host") {
       goToHome()
+      return
+    }
+
+    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
+      setMessage("Session maître du jeu invalide")
       return
     }
 
@@ -575,6 +619,7 @@ function App() {
       .from("games")
       .delete()
       .eq("id", currentGame.id)
+      .eq("host_session_id", mySessionId)
 
     if (deleteGameError) {
       console.error(deleteGameError)
@@ -608,6 +653,24 @@ function App() {
         return
       }
 
+      if (savedEntryMode === "host") {
+        if (!game.host_session_id || game.host_session_id !== sessionId) {
+          clearPersistedGameSession()
+          return
+        }
+
+        setHostName(savedHostName || game.host_name || "")
+        setEntryMode("host")
+        setCurrentGame(game)
+        setExpectedPlayers(game.expected_players || 4)
+        setRoleConfig({
+          ...EMPTY_ROLE_CONFIG,
+          ...(game.role_config || {}),
+        })
+        await loadPlayers(game.id)
+        return
+      }
+
       if (savedEntryMode === "player") {
         const { data: player, error: playerError } = await supabase
           .from("players")
@@ -624,14 +687,11 @@ function App() {
         setPlayerName(savedPlayerName || player.name || "")
         setEntryMode("player")
         setCurrentGame(game)
-        await loadPlayers(game.id)
-        return
-      }
-
-      if (savedEntryMode === "host") {
-        setHostName(savedHostName || game.host_name || "")
-        setEntryMode("host")
-        setCurrentGame(game)
+        setExpectedPlayers(game.expected_players || 4)
+        setRoleConfig({
+          ...EMPTY_ROLE_CONFIG,
+          ...(game.role_config || {}),
+        })
         await loadPlayers(game.id)
       }
     }
@@ -755,9 +815,7 @@ function App() {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "980px", margin: "0 auto" }}>
-            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
-              Loup-Garou
-            </h1>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
             <div style={panelStyle}>
               <h2>Salle d’attente maître du jeu</h2>
@@ -870,9 +928,7 @@ function App() {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
-              Loup-Garou
-            </h1>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
             <div style={panelStyle}>
               <h2>Interface maître du jeu</h2>
@@ -939,9 +995,7 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "850px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
-            Loup-Garou
-          </h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
           <div style={panelStyle}>
             <h2>{isLobby ? "Salle d’attente" : "Interface joueur"}</h2>
@@ -976,13 +1030,7 @@ function App() {
             )}
 
             {me && (
-              <p
-                style={{
-                  marginTop: "10px",
-                  fontWeight: "bold",
-                  color: me.alive ? "lightgreen" : "#ff6b57",
-                }}
-              >
+              <p style={{ marginTop: "10px", fontWeight: "bold", color: me.alive ? "lightgreen" : "#ff6b57" }}>
                 Tu es {me.alive ? "vivant" : "mort"}
               </p>
             )}
@@ -1012,9 +1060,7 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
-            Loup-Garou
-          </h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
           <div style={panelStyle}>
             <h2>Entrer comme maître du jeu</h2>
@@ -1049,9 +1095,7 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
-            Loup-Garou
-          </h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
           <div style={panelStyle}>
             <h2>Entrer comme joueur</h2>
