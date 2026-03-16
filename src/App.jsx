@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { supabase } from "./supabase"
+import wolfMoon from "./assets/wolf-moon.png"
 
 const ROLE_LABELS = {
   loup: "Loup-garou",
@@ -61,21 +62,6 @@ function App() {
       sessionStorage.setItem("lg_session_id", sessionId)
     }
     return sessionId
-  }
-
-  function resetLocalState() {
-    setMessage("")
-    setCurrentGame(null)
-    setPlayers([])
-    setExpectedPlayers(4)
-    setRoleConfig({
-      ...EMPTY_ROLE_CONFIG,
-      loup: 1,
-      villageois: 3,
-    })
-    setJoinCode("")
-    setPlayerName("")
-    setHostName("")
   }
 
   function normalizeName(name) {
@@ -594,6 +580,56 @@ function App() {
 
   const me = players.find((p) => p.session_id === mySessionId)
 
+  const pageStyle = {
+    minHeight: "100vh",
+    backgroundImage: `linear-gradient(rgba(5, 8, 20, 0.78), rgba(5, 8, 20, 0.88)), url(${wolfMoon})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    padding: "30px 16px",
+    color: "white",
+  }
+
+  const panelStyle = {
+    background: "rgba(10, 14, 30, 0.78)",
+    border: "1px solid rgba(255,255,255,0.2)",
+    borderRadius: "18px",
+    padding: "24px",
+    backdropFilter: "blur(5px)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
+  }
+
+  const inputStyle = {
+    padding: "12px",
+    width: "100%",
+    marginBottom: "12px",
+    borderRadius: "10px",
+    border: "1px solid rgba(255,255,255,0.25)",
+    background: "rgba(255,255,255,0.08)",
+    color: "white",
+    outline: "none",
+  }
+
+  const buttonStyle = {
+    padding: "12px 16px",
+    cursor: "pointer",
+    borderRadius: "10px",
+    border: "none",
+    background: "#8b5cf6",
+    color: "white",
+    fontWeight: "bold",
+  }
+
+  const secondaryButtonStyle = {
+    padding: "12px 16px",
+    cursor: "pointer",
+    borderRadius: "10px",
+    border: "1px solid rgba(255,255,255,0.25)",
+    background: "rgba(255,255,255,0.08)",
+    color: "white",
+    fontWeight: "bold",
+  }
+
   if (currentGame) {
     const currentRoleConfig = currentGame.role_config || {}
     const isLobby = currentGame.status === "lobby"
@@ -602,109 +638,112 @@ function App() {
 
     if (entryMode === "host" && isLobby) {
       return (
-        <div style={{ padding: "40px", fontFamily: "Arial", maxWidth: "950px", margin: "0 auto" }}>
-          <h1>Loup-Garou</h1>
+        <div style={pageStyle}>
+          <div style={{ maxWidth: "980px", margin: "0 auto" }}>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
-          <div style={{ border: "1px solid #ccc", borderRadius: "12px", padding: "20px", marginTop: "20px" }}>
-            <h2>Salle d’attente maître du jeu</h2>
+            <div style={panelStyle}>
+              <h2>Salle d’attente maître du jeu</h2>
 
-            <p><strong>Code de la partie :</strong> {currentGame.code}</p>
-            <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
-            <p><strong>Joueurs connectés :</strong> {players.length} / {expectedPlayers}</p>
+              <p><strong>Code de la partie :</strong> {currentGame.code}</p>
+              <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
+              <p><strong>Joueurs connectés :</strong> {players.length} / {expectedPlayers}</p>
 
-            <label>Nombre de joueurs</label>
-            <input
-              type="number"
-              min="4"
-              value={expectedPlayers}
-              onChange={(e) => setExpectedPlayers(Number(e.target.value))}
-              style={{ padding: "10px", width: "100%", marginTop: "5px", marginBottom: "15px" }}
-            />
+              <label>Nombre de joueurs</label>
+              <input
+                type="number"
+                min="4"
+                value={expectedPlayers}
+                onChange={(e) => setExpectedPlayers(Number(e.target.value))}
+                style={inputStyle}
+              />
 
-            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "15px" }}>
-              <button
-                onClick={() => {
-                  const suggested = generateSuggestedRoles(expectedPlayers)
-                  setRoleConfig(suggested)
-                  setMessage("Composition suggérée générée")
-                }}
-                style={{ padding: "10px 16px", cursor: "pointer" }}
-              >
-                Générer une composition intelligente
-              </button>
+              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "15px" }}>
+                <button
+                  onClick={() => {
+                    const suggested = generateSuggestedRoles(expectedPlayers)
+                    setRoleConfig(suggested)
+                    setMessage("Composition suggérée générée")
+                  }}
+                  style={buttonStyle}
+                >
+                  Générer une composition intelligente
+                </button>
 
-              <button
-                onClick={() => {
-                  setRoleConfig({ ...EMPTY_ROLE_CONFIG })
-                  setMessage("Composition remise à zéro")
-                }}
-                style={{ padding: "10px 16px", cursor: "pointer" }}
-              >
-                Réinitialiser les rôles
-              </button>
-            </div>
-
-            <h3>Choix des rôles</h3>
-
-            {Object.keys(roleConfig).map((roleKey) => (
-              <div
-                key={roleKey}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  border: "1px solid #555",
-                  borderRadius: "8px",
-                  padding: "10px",
-                  marginBottom: "10px",
-                }}
-              >
-                <span>{ROLE_LABELS[roleKey]}</span>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <button
-                    onClick={() => changeRoleCount(roleKey, -1)}
-                    style={{ padding: "4px 10px", cursor: "pointer" }}
-                  >
-                    -
-                  </button>
-
-                  <strong>{roleConfig[roleKey]}</strong>
-
-                  <button
-                    onClick={() => changeRoleCount(roleKey, 1)}
-                    style={{ padding: "4px 10px", cursor: "pointer" }}
-                  >
-                    +
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    setRoleConfig({ ...EMPTY_ROLE_CONFIG })
+                    setMessage("Composition remise à zéro")
+                  }}
+                  style={secondaryButtonStyle}
+                >
+                  Réinitialiser les rôles
+                </button>
               </div>
-            ))}
 
-            <p><strong>Total des rôles :</strong> {totalConfiguredRoles} / {expectedPlayers}</p>
+              <h3>Choix des rôles</h3>
 
-            <div style={{ display: "flex", gap: "12px", marginTop: "15px", flexWrap: "wrap" }}>
-              <button onClick={saveHostConfiguration} style={{ padding: "10px 16px", cursor: "pointer" }}>
-                Sauvegarder la configuration
-              </button>
+              {Object.keys(roleConfig).map((roleKey) => (
+                <div
+                  key={roleKey}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    border: "1px solid rgba(255,255,255,0.18)",
+                    borderRadius: "12px",
+                    padding: "12px",
+                    marginBottom: "10px",
+                    background: "rgba(255,255,255,0.04)",
+                  }}
+                >
+                  <span>{ROLE_LABELS[roleKey]}</span>
 
-              <button onClick={startGame} style={{ padding: "10px 16px", cursor: "pointer" }}>
-                Lancer la partie
-              </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <button
+                      onClick={() => changeRoleCount(roleKey, -1)}
+                      style={secondaryButtonStyle}
+                    >
+                      -
+                    </button>
+
+                    <strong>{roleConfig[roleKey]}</strong>
+
+                    <button
+                      onClick={() => changeRoleCount(roleKey, 1)}
+                      style={buttonStyle}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              <p><strong>Total des rôles :</strong> {totalConfiguredRoles} / {expectedPlayers}</p>
+
+              <div style={{ display: "flex", gap: "12px", marginTop: "15px", flexWrap: "wrap" }}>
+                <button onClick={saveHostConfiguration} style={secondaryButtonStyle}>
+                  Sauvegarder la configuration
+                </button>
+
+                <button onClick={startGame} style={buttonStyle}>
+                  Lancer la partie
+                </button>
+              </div>
+
+              <h3 style={{ marginTop: "25px" }}>Joueurs connectés</h3>
+              {players.length === 0 ? (
+                <p>Aucun joueur pour le moment.</p>
+              ) : (
+                <ul>
+                  {players.map((player) => (
+                    <li key={player.id}>{player.name}</li>
+                  ))}
+                </ul>
+              )}
+
+              {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
             </div>
-
-            <h3 style={{ marginTop: "25px" }}>Joueurs connectés</h3>
-            {players.length === 0 ? (
-              <p>Aucun joueur pour le moment.</p>
-            ) : (
-              <ul>
-                {players.map((player) => (
-                  <li key={player.id}>{player.name}</li>
-                ))}
-              </ul>
-            )}
-
-            {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
           </div>
         </div>
       )
@@ -712,119 +751,123 @@ function App() {
 
     if (entryMode === "host" && (isStarted || isEnded)) {
       return (
-        <div style={{ padding: "40px", fontFamily: "Arial", maxWidth: "1000px", margin: "0 auto" }}>
-          <h1>Loup-Garou</h1>
+        <div style={pageStyle}>
+          <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
-          <div style={{ border: "1px solid #ccc", borderRadius: "12px", padding: "20px", marginTop: "20px" }}>
-            <h2>Interface maître du jeu</h2>
+            <div style={panelStyle}>
+              <h2>Interface maître du jeu</h2>
 
-            <p><strong>Code de la partie :</strong> {currentGame.code}</p>
-            <p><strong>Statut :</strong> {currentGame.status}</p>
-            <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
+              <p><strong>Code de la partie :</strong> {currentGame.code}</p>
+              <p><strong>Statut :</strong> {currentGame.status}</p>
+              <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
 
-            {isEnded && (
-              <p style={{ marginTop: "20px", fontWeight: "bold", color: "tomato" }}>
-                Partie terminée{currentGame.winner ? ` — ${currentGame.winner}` : ""}
-              </p>
-            )}
+              {isEnded && (
+                <p style={{ marginTop: "20px", fontWeight: "bold", color: "#ff6b57" }}>
+                  Partie terminée{currentGame.winner ? ` — ${currentGame.winner}` : ""}
+                </p>
+              )}
 
-            <h3>Joueurs</h3>
-            <ul>
-              {players.map((player) => (
-                <li key={player.id} style={{ marginBottom: "10px" }}>
-                  <span>
-                    {player.name}
-                    {` — rôle : ${ROLE_LABELS[player.role] || player.role || "non défini"}`}
-                    {player.alive ? " — vivant" : " — mort"}
-                  </span>
+              <h3>Joueurs</h3>
+              <ul>
+                {players.map((player) => (
+                  <li key={player.id} style={{ marginBottom: "10px" }}>
+                    <span>
+                      {player.name}
+                      {` — rôle : ${ROLE_LABELS[player.role] || player.role || "non défini"}`}
+                      {player.alive ? " — vivant" : " — mort"}
+                    </span>
 
-                  <button
-                    onClick={() => markPlayerDead(player.id, !player.alive)}
-                    style={{ marginLeft: "12px", padding: "6px 10px", cursor: "pointer" }}
-                  >
-                    {player.alive ? "Marquer mort" : "Rendre vivant"}
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    <button
+                      onClick={() => markPlayerDead(player.id, !player.alive)}
+                      style={{ ...secondaryButtonStyle, marginLeft: "12px" }}
+                    >
+                      {player.alive ? "Marquer mort" : "Rendre vivant"}
+                    </button>
+                  </li>
+                ))}
+              </ul>
 
-            <h3>Fin manuelle</h3>
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              <button onClick={() => endGameManually("Le village gagne")} style={{ padding: "10px 14px", cursor: "pointer" }}>
-                Village gagne
-              </button>
-              <button onClick={() => endGameManually("Les loups gagnent")} style={{ padding: "10px 14px", cursor: "pointer" }}>
-                Loups gagnent
-              </button>
-              <button onClick={() => endGameManually("Cupidon gagne")} style={{ padding: "10px 14px", cursor: "pointer" }}>
-                Cupidon gagne
-              </button>
-              <button onClick={() => endGameManually("Le pyromane gagne")} style={{ padding: "10px 14px", cursor: "pointer" }}>
-                Pyromane gagne
-              </button>
+              <h3>Fin manuelle</h3>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <button onClick={() => endGameManually("Le village gagne")} style={secondaryButtonStyle}>
+                  Village gagne
+                </button>
+                <button onClick={() => endGameManually("Les loups gagnent")} style={secondaryButtonStyle}>
+                  Loups gagnent
+                </button>
+                <button onClick={() => endGameManually("Cupidon gagne")} style={secondaryButtonStyle}>
+                  Cupidon gagne
+                </button>
+                <button onClick={() => endGameManually("Le pyromane gagne")} style={secondaryButtonStyle}>
+                  Pyromane gagne
+                </button>
+              </div>
+
+              <div style={{ marginTop: "20px" }}>
+                <button onClick={newGame} style={buttonStyle}>
+                  Nouvelle partie
+                </button>
+              </div>
+
+              {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
             </div>
-
-            <div style={{ marginTop: "20px" }}>
-              <button onClick={newGame} style={{ padding: "10px 16px", cursor: "pointer" }}>
-                Nouvelle partie
-              </button>
-            </div>
-
-            {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
           </div>
         </div>
       )
     }
 
     return (
-      <div style={{ padding: "40px", fontFamily: "Arial", maxWidth: "850px", margin: "0 auto" }}>
-        <h1>Loup-Garou</h1>
+      <div style={pageStyle}>
+        <div style={{ maxWidth: "850px", margin: "0 auto" }}>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
-        <div style={{ border: "1px solid #ccc", borderRadius: "12px", padding: "20px", marginTop: "20px" }}>
-          <h2>{isLobby ? "Salle d’attente" : "Interface joueur"}</h2>
+          <div style={panelStyle}>
+            <h2>{isLobby ? "Salle d’attente" : "Interface joueur"}</h2>
 
-          <p><strong>Code de la partie :</strong> {currentGame.code}</p>
-          <p><strong>Statut :</strong> {currentGame.status}</p>
-          <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
-          <p><strong>Joueurs connectés :</strong> {players.length} / {currentGame.expected_players}</p>
+            <p><strong>Code de la partie :</strong> {currentGame.code}</p>
+            <p><strong>Statut :</strong> {currentGame.status}</p>
+            <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
+            <p><strong>Joueurs connectés :</strong> {players.length} / {currentGame.expected_players}</p>
 
-          {isEnded && (
-            <p style={{ marginTop: "20px", fontWeight: "bold", color: "tomato" }}>
-              Partie terminée{currentGame.winner ? ` — ${currentGame.winner}` : ""}
-            </p>
-          )}
-
-          <h3>Joueurs connectés</h3>
-          <ul>
-            {players.map((player) => (
-              <li key={player.id}>
-                {player.name} {player.alive ? "— vivant" : "— mort"}
-              </li>
-            ))}
-          </ul>
-
-          {me?.role && (
-            <div style={{ marginTop: "20px" }}>
-              <p style={{ fontWeight: "bold" }}>
-                Ton rôle : {ROLE_LABELS[me.role] || me.role}
+            {isEnded && (
+              <p style={{ marginTop: "20px", fontWeight: "bold", color: "#ff6b57" }}>
+                Partie terminée{currentGame.winner ? ` — ${currentGame.winner}` : ""}
               </p>
-              <p>{ROLE_DESCRIPTIONS[me.role] || ""}</p>
-            </div>
-          )}
+            )}
 
-          {me && (
-            <p style={{ marginTop: "10px", fontWeight: "bold", color: me.alive ? "lightgreen" : "tomato" }}>
-              Tu es {me.alive ? "vivant" : "mort"}
-            </p>
-          )}
+            <h3>Joueurs connectés</h3>
+            <ul>
+              {players.map((player) => (
+                <li key={player.id}>
+                  {player.name} {player.alive ? "— vivant" : "— mort"}
+                </li>
+              ))}
+            </ul>
 
-          {isStarted && (
-            <p style={{ marginTop: "20px", fontWeight: "bold", color: "limegreen" }}>
-              La partie a commencé
-            </p>
-          )}
+            {me?.role && (
+              <div style={{ marginTop: "20px" }}>
+                <p style={{ fontWeight: "bold" }}>
+                  Ton rôle : {ROLE_LABELS[me.role] || me.role}
+                </p>
+                <p>{ROLE_DESCRIPTIONS[me.role] || ""}</p>
+              </div>
+            )}
 
-          {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
+            {me && (
+              <p style={{ marginTop: "10px", fontWeight: "bold", color: me.alive ? "lightgreen" : "#ff6b57" }}>
+                Tu es {me.alive ? "vivant" : "mort"}
+              </p>
+            )}
+
+            {isStarted && (
+              <p style={{ marginTop: "20px", fontWeight: "bold", color: "limegreen" }}>
+                La partie a commencé
+              </p>
+            )}
+
+            {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
+          </div>
         </div>
       </div>
     )
@@ -832,111 +875,119 @@ function App() {
 
   if (entryMode === "host") {
     return (
-      <div style={{ padding: "40px", fontFamily: "Arial", maxWidth: "700px", margin: "0 auto" }}>
-        <h1>Loup-Garou</h1>
+      <div style={pageStyle}>
+        <div style={{ maxWidth: "700px", margin: "0 auto" }}>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
-        <div style={{ marginTop: "30px", padding: "20px", border: "1px solid #ccc", borderRadius: "10px" }}>
-          <h2>Entrer comme maître du jeu</h2>
+          <div style={panelStyle}>
+            <h2>Entrer comme maître du jeu</h2>
 
-          <input
-            type="text"
-            placeholder="Nom du maître du jeu"
-            value={hostName}
-            onChange={(e) => setHostName(e.target.value)}
-            style={{ padding: "10px", width: "100%", marginBottom: "10px" }}
-          />
+            <input
+              type="text"
+              placeholder="Nom du maître du jeu"
+              value={hostName}
+              onChange={(e) => setHostName(e.target.value)}
+              style={inputStyle}
+            />
 
-          <button onClick={createGameAsHost} style={{ padding: "10px 16px", cursor: "pointer" }}>
-            Créer la partie
-          </button>
+            <button onClick={createGameAsHost} style={buttonStyle}>
+              Créer la partie
+            </button>
 
-          <button
-            onClick={() => {
-              setEntryMode("")
-              setMessage("")
-            }}
-            style={{ padding: "10px 16px", cursor: "pointer", marginLeft: "10px" }}
-          >
-            Retour
-          </button>
+            <button
+              onClick={() => {
+                setEntryMode("")
+                setMessage("")
+              }}
+              style={{ ...secondaryButtonStyle, marginLeft: "10px" }}
+            >
+              Retour
+            </button>
+          </div>
+
+          {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
         </div>
-
-        {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
       </div>
     )
   }
 
   if (entryMode === "player") {
     return (
-      <div style={{ padding: "40px", fontFamily: "Arial", maxWidth: "700px", margin: "0 auto" }}>
-        <h1>Loup-Garou</h1>
+      <div style={pageStyle}>
+        <div style={{ maxWidth: "700px", margin: "0 auto" }}>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
 
-        <div style={{ marginTop: "30px", padding: "20px", border: "1px solid #ccc", borderRadius: "10px" }}>
-          <h2>Entrer comme joueur</h2>
+          <div style={panelStyle}>
+            <h2>Entrer comme joueur</h2>
 
-          <input
-            type="text"
-            placeholder="Ton nom"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-            style={{ padding: "10px", width: "100%", marginBottom: "10px" }}
-          />
+            <input
+              type="text"
+              placeholder="Ton nom"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              style={inputStyle}
+            />
 
-          <input
-            type="text"
-            placeholder="Code de la partie"
-            value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-            style={{ padding: "10px", width: "100%", marginBottom: "10px" }}
-          />
+            <input
+              type="text"
+              placeholder="Code de la partie"
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+              style={inputStyle}
+            />
 
-          <button onClick={joinGameAsPlayer} style={{ padding: "10px 16px", cursor: "pointer" }}>
-            Rejoindre
-          </button>
+            <button onClick={joinGameAsPlayer} style={buttonStyle}>
+              Rejoindre
+            </button>
 
-          <button
-            onClick={() => {
-              setEntryMode("")
-              setMessage("")
-            }}
-            style={{ padding: "10px 16px", cursor: "pointer", marginLeft: "10px" }}
-          >
-            Retour
-          </button>
+            <button
+              onClick={() => {
+                setEntryMode("")
+                setMessage("")
+              }}
+              style={{ ...secondaryButtonStyle, marginLeft: "10px" }}
+            >
+              Retour
+            </button>
+          </div>
+
+          {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
         </div>
-
-        {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
       </div>
     )
   }
 
   return (
-    <div style={{ padding: "40px", fontFamily: "Arial", maxWidth: "700px", margin: "0 auto", textAlign: "center" }}>
-      <h1>Loup-Garou</h1>
+    <div style={pageStyle}>
+      <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center" }}>
+        <h1 style={{ fontSize: "72px", marginBottom: "24px" }}>Loup-Garou</h1>
 
-      <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "20px" }}>
-        <button
-          onClick={() => {
-            setEntryMode("host")
-            setMessage("")
-          }}
-          style={{ padding: "16px", cursor: "pointer", fontSize: "18px" }}
-        >
-          Entrer comme maître du jeu
-        </button>
+        <div style={panelStyle}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <button
+              onClick={() => {
+                setEntryMode("host")
+                setMessage("")
+              }}
+              style={{ ...buttonStyle, fontSize: "18px" }}
+            >
+              Entrer comme maître du jeu
+            </button>
 
-        <button
-          onClick={() => {
-            setEntryMode("player")
-            setMessage("")
-          }}
-          style={{ padding: "16px", cursor: "pointer", fontSize: "18px" }}
-        >
-          Entrer comme joueur
-        </button>
+            <button
+              onClick={() => {
+                setEntryMode("player")
+                setMessage("")
+              }}
+              style={{ ...secondaryButtonStyle, fontSize: "18px" }}
+            >
+              Entrer comme joueur
+            </button>
+          </div>
+        </div>
+
+        {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
       </div>
-
-      {message && <p style={{ marginTop: "20px", fontWeight: "bold" }}>{message}</p>}
     </div>
   )
 }
