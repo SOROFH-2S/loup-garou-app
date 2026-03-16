@@ -11,6 +11,16 @@ const ROLE_LABELS = {
   cupidon: "Cupidon",
   pyromane: "Pyromane",
   villageois: "Villageois",
+  renard: "Renard",
+  corbeau: "Corbeau",
+  ancien: "L'Ancien",
+  enfant_sauvage: "Enfant sauvage",
+  petit_chaperon_rouge: "Petit chaperon rouge",
+  ange_dechu: "Ange déchu",
+  chevalier_epee_rouillee: "Chevalier à l'épée rouillée",
+  loup_blanc: "Loup blanc",
+  loup_infecte: "Loup infecté",
+  grand_mechant_loup: "Grand méchant loup",
 }
 
 const ROLE_DESCRIPTIONS = {
@@ -22,6 +32,16 @@ const ROLE_DESCRIPTIONS = {
   cupidon: "Tu peux former un couple d’amoureux au début de la partie.",
   pyromane: "Tu joues seul selon les règles définies par le maître du jeu.",
   villageois: "Tu n’as pas de pouvoir spécial. Tu aides le village.",
+  renard: "Tu peux sonder un groupe de joueurs. Si aucun loup n’est détecté, tu perds ton pouvoir selon les règles choisies.",
+  corbeau: "Chaque nuit, tu peux désigner un joueur qui recevra des voix supplémentaires au prochain vote.",
+  ancien: "Tu résistes à une première attaque des loups selon les règles du maître du jeu.",
+  enfant_sauvage: "Tu choisis un modèle au début de la partie. Si ce modèle meurt, tu deviens loup.",
+  petit_chaperon_rouge: "Tu disposes d’un pouvoir spécial de protection ou d’information selon la variante utilisée.",
+  ange_dechu: "Tu joues avec une condition de victoire personnelle définie par le maître du jeu.",
+  chevalier_epee_rouillee: "Tu peux infliger un effet spécial à un loup si tu es attaqué ou éliminé selon les règles choisies.",
+  loup_blanc: "Tu es un loup spécial avec un objectif personnel, souvent de finir seul survivant.",
+  loup_infecte: "Tu peux, selon les règles choisies, transformer une victime en loup au lieu de simplement l’éliminer.",
+  grand_mechant_loup: "Tant qu’aucun loup n’est mort, tu peux bénéficier d’un pouvoir offensif supplémentaire selon la variante.",
 }
 
 const EMPTY_ROLE_CONFIG = {
@@ -33,6 +53,16 @@ const EMPTY_ROLE_CONFIG = {
   cupidon: 0,
   pyromane: 0,
   villageois: 0,
+  renard: 0,
+  corbeau: 0,
+  ancien: 0,
+  enfant_sauvage: 0,
+  petit_chaperon_rouge: 0,
+  ange_dechu: 0,
+  chevalier_epee_rouillee: 0,
+  loup_blanc: 0,
+  loup_infecte: 0,
+  grand_mechant_loup: 0,
 }
 
 const STORAGE_KEYS = {
@@ -141,7 +171,8 @@ function App() {
     }
 
     if (playerCount <= 6) {
-      config.loup = 2
+      config.loup = 1
+      config.loup_blanc = 1
       config.voyante = 1
       config.sorciere = 1
       config.villageois = playerCount - 4
@@ -149,7 +180,8 @@ function App() {
     }
 
     if (playerCount <= 8) {
-      config.loup = 2
+      config.loup = 1
+      config.grand_mechant_loup = 1
       config.voyante = 1
       config.sorciere = 1
       config.chasseur = 1
@@ -158,13 +190,36 @@ function App() {
       return config
     }
 
-    config.loup = 3
+    if (playerCount <= 10) {
+      config.loup = 1
+      config.loup_blanc = 1
+      config.loup_infecte = 1
+      config.voyante = 1
+      config.sorciere = 1
+      config.chasseur = 1
+      config.cupidon = 1
+      config.corbeau = 1
+      config.ancien = 1
+      config.villageois = playerCount - 9
+      return config
+    }
+
+    config.loup = 1
+    config.loup_blanc = 1
+    config.loup_infecte = 1
+    config.grand_mechant_loup = 1
     config.voyante = 1
     config.sorciere = 1
     config.chasseur = 1
     config.cupidon = 1
-    config.petite_fille = 1
-    config.villageois = Math.max(0, playerCount - 8)
+    config.corbeau = 1
+    config.ancien = 1
+    config.renard = 1
+    config.enfant_sauvage = 1
+    config.petit_chaperon_rouge = 1
+    config.ange_dechu = 1
+    config.chevalier_epee_rouillee = 1
+    config.villageois = Math.max(0, playerCount - 15)
 
     return config
   }
@@ -186,10 +241,13 @@ function App() {
 
   function computeWinner(playersList) {
     const alivePlayers = playersList.filter((p) => p.alive)
-    const wolves = alivePlayers.filter((p) => p.role === "loup")
-    const nonWolves = alivePlayers.filter((p) => p.role !== "loup")
+    const wolfRoles = ["loup", "loup_blanc", "loup_infecte", "grand_mechant_loup"]
+
+    const wolves = alivePlayers.filter((p) => wolfRoles.includes(p.role))
+    const nonWolves = alivePlayers.filter((p) => !wolfRoles.includes(p.role))
     const pyromane = alivePlayers.filter((p) => p.role === "pyromane")
     const cupidon = alivePlayers.filter((p) => p.role === "cupidon")
+    const angeDechu = alivePlayers.filter((p) => p.role === "ange_dechu")
 
     if (pyromane.length === 1 && alivePlayers.length === 1) {
       return "Le pyromane gagne"
@@ -197,6 +255,10 @@ function App() {
 
     if (cupidon.length === 1 && alivePlayers.length === 1) {
       return "Cupidon gagne"
+    }
+
+    if (angeDechu.length === 1 && alivePlayers.length === 1) {
+      return "L’ange déchu gagne"
     }
 
     if (wolves.length === 0 && alivePlayers.length > 0) {
@@ -314,22 +376,9 @@ function App() {
     const game = games[0]
 
     if (game.host_session_id === sessionId) {
-      persistGameSession({
-        gameId: game.id,
-        mode: "host",
-        hostNameValue: game.host_name || "",
-      })
-
-      setHostName(game.host_name || "")
-      setEntryMode("host")
-      setCurrentGame(game)
-      setExpectedPlayers(game.expected_players || 4)
-      setRoleConfig({
-        ...EMPTY_ROLE_CONFIG,
-        ...(game.role_config || {}),
-      })
-      setMessage("Session maître du jeu restaurée")
-      await loadPlayers(game.id)
+      setMessage(
+        "Cette fenêtre est déjà celle du maître du jeu. Utilise un autre navigateur, une fenêtre privée ou un autre téléphone pour rejoindre comme joueur."
+      )
       return
     }
 
@@ -816,7 +865,9 @@ function App() {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "980px", margin: "0 auto" }}>
-            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+              Loup-Garou
+            </h1>
 
             <div style={panelStyle}>
               <h2>Salle d’attente maître du jeu</h2>
@@ -929,7 +980,9 @@ function App() {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+            <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+              Loup-Garou
+            </h1>
 
             <div style={panelStyle}>
               <h2>Interface maître du jeu</h2>
@@ -978,6 +1031,9 @@ function App() {
                 <button onClick={() => endGameManually("Le pyromane gagne")} style={secondaryButtonStyle}>
                   Pyromane gagne
                 </button>
+                <button onClick={() => endGameManually("L’ange déchu gagne")} style={secondaryButtonStyle}>
+                  Ange déchu gagne
+                </button>
               </div>
 
               <div style={{ marginTop: "20px" }}>
@@ -996,7 +1052,9 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "850px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+            Loup-Garou
+          </h1>
 
           <div style={panelStyle}>
             <h2>{isLobby ? "Salle d’attente" : "Interface joueur"}</h2>
@@ -1031,7 +1089,13 @@ function App() {
             )}
 
             {me && (
-              <p style={{ marginTop: "10px", fontWeight: "bold", color: me.alive ? "lightgreen" : "#ff6b57" }}>
+              <p
+                style={{
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  color: me.alive ? "lightgreen" : "#ff6b57",
+                }}
+              >
                 Tu es {me.alive ? "vivant" : "mort"}
               </p>
             )}
@@ -1061,7 +1125,9 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+            Loup-Garou
+          </h1>
 
           <div style={panelStyle}>
             <h2>Entrer comme maître du jeu</h2>
@@ -1096,7 +1162,9 @@ function App() {
     return (
       <div style={pageStyle}>
         <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>Loup-Garou</h1>
+          <h1 style={{ textAlign: "center", fontSize: "64px", marginBottom: "24px" }}>
+            Loup-Garou
+          </h1>
 
           <div style={panelStyle}>
             <h2>Entrer comme joueur</h2>
