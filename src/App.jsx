@@ -289,7 +289,6 @@ function App() {
     const sessionId = getSessionId()
 
     setMySessionId(sessionId)
-    setEntryMode("player")
 
     const { data: games, error: gameError } = await supabase
       .from("games")
@@ -309,11 +308,6 @@ function App() {
 
     const game = games[0]
 
-    if (game.status !== "lobby") {
-      setMessage("La partie a déjà commencé ou est terminée")
-      return
-    }
-
     if (game.host_session_id && game.host_session_id === sessionId) {
       persistGameSession({
         gameId: game.id,
@@ -324,8 +318,51 @@ function App() {
       setHostName(game.host_name || "")
       setEntryMode("host")
       setCurrentGame(game)
+      setExpectedPlayers(game.expected_players || 4)
+      setRoleConfig({
+        ...EMPTY_ROLE_CONFIG,
+        ...(game.role_config || {}),
+      })
       setMessage("Session maître du jeu restaurée")
       await loadPlayers(game.id)
+      return
+    }
+
+    if (game.status !== "lobby") {
+      const { data: existingPlayerInStartedGame, error: startedPlayerError } = await supabase
+        .from("players")
+        .select("*")
+        .eq("game_id", game.id)
+        .eq("session_id", sessionId)
+        .maybeSingle()
+
+      if (startedPlayerError) {
+        console.error(startedPlayerError)
+        setMessage("Erreur lors de la vérification de la session")
+        return
+      }
+
+      if (existingPlayerInStartedGame) {
+        persistGameSession({
+          gameId: game.id,
+          mode: "player",
+          playerNameValue: existingPlayerInStartedGame.name,
+        })
+
+        setPlayerName(existingPlayerInStartedGame.name)
+        setEntryMode("player")
+        setCurrentGame(game)
+        setExpectedPlayers(game.expected_players || 4)
+        setRoleConfig({
+          ...EMPTY_ROLE_CONFIG,
+          ...(game.role_config || {}),
+        })
+        setMessage("Session restaurée dans la partie")
+        await loadPlayers(game.id)
+        return
+      }
+
+      setMessage("La partie a déjà commencé ou est terminée")
       return
     }
 
@@ -354,6 +391,11 @@ function App() {
       setPlayerName(existingSameSessionPlayer.name)
       setEntryMode("player")
       setCurrentGame(game)
+      setExpectedPlayers(game.expected_players || 4)
+      setRoleConfig({
+        ...EMPTY_ROLE_CONFIG,
+        ...(game.role_config || {}),
+      })
       setMessage("Session restaurée dans la partie")
       await loadPlayers(game.id)
       return
@@ -397,7 +439,13 @@ function App() {
       playerNameValue: playerName.trim(),
     })
 
+    setEntryMode("player")
     setCurrentGame(game)
+    setExpectedPlayers(game.expected_players || 4)
+    setRoleConfig({
+      ...EMPTY_ROLE_CONFIG,
+      ...(game.role_config || {}),
+    })
     setMessage("Tu as rejoint la partie avec succès")
     await loadPlayers(game.id)
   }
@@ -405,7 +453,7 @@ function App() {
   async function saveHostConfiguration() {
     if (!currentGame) return
 
-    if (entryMode !== "host") {
+    if (currentGame.host_session_id !== mySessionId) {
       setMessage("Seul le maître du jeu peut modifier la configuration")
       return
     }
@@ -444,13 +492,8 @@ function App() {
   async function startGame() {
     if (!currentGame) return
 
-    if (entryMode !== "host") {
+    if (currentGame.host_session_id !== mySessionId) {
       setMessage("Seul le maître du jeu peut lancer la partie")
-      return
-    }
-
-    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
-      setMessage("Session maître du jeu invalide")
       return
     }
 
@@ -535,13 +578,8 @@ function App() {
   async function markPlayerDead(playerId, nextAliveValue) {
     if (!currentGame) return
 
-    if (entryMode !== "host") {
+    if (currentGame.host_session_id !== mySessionId) {
       setMessage("Seul le maître du jeu peut gérer les morts")
-      return
-    }
-
-    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
-      setMessage("Session maître du jeu invalide")
       return
     }
 
@@ -577,13 +615,8 @@ function App() {
   async function endGameManually(winner) {
     if (!currentGame) return
 
-    if (entryMode !== "host") {
+    if (currentGame.host_session_id !== mySessionId) {
       setMessage("Seul le maître du jeu peut terminer la partie")
-      return
-    }
-
-    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
-      setMessage("Session maître du jeu invalide")
       return
     }
 
@@ -594,13 +627,8 @@ function App() {
   async function newGame() {
     if (!currentGame) return
 
-    if (entryMode !== "host") {
+    if (currentGame.host_session_id !== mySessionId) {
       goToHome()
-      return
-    }
-
-    if (currentGame.host_session_id && currentGame.host_session_id !== mySessionId) {
-      setMessage("Session maître du jeu invalide")
       return
     }
 
@@ -755,6 +783,7 @@ function App() {
   }, [currentGame])
 
   const me = players.find((p) => p.session_id === mySessionId)
+  const isRealHost = !!currentGame && currentGame.host_session_id === mySessionId
 
   const pageStyle = {
     minHeight: "100vh",
@@ -811,7 +840,7 @@ function App() {
     const isStarted = currentGame.status === "started"
     const isEnded = currentGame.status === "ended"
 
-    if (entryMode === "host" && isLobby) {
+    if (isRealHost && isLobby) {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "980px", margin: "0 auto" }}>
@@ -924,7 +953,7 @@ function App() {
       )
     }
 
-    if (entryMode === "host" && (isStarted || isEnded)) {
+    if (isRealHost && (isStarted || isEnded)) {
       return (
         <div style={pageStyle}>
           <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
