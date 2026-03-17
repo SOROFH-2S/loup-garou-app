@@ -33,31 +33,55 @@ const ROLE_LABELS = {
 
 const ROLE_DESCRIPTIONS = {
   loup: "Tu élimines les villageois la nuit avec les autres loups.",
-  sorciere: "Tu disposes de deux potions dont une potion de vie et une potion de mort utilisable une fois chacune durant toute la partie. Tu ne peux les utiliser que pendant la nuit.",
+  sorciere:
+    "Tu disposes de deux potions dont une potion de vie et une potion de mort utilisable une fois chacune durant toute la partie. Tu ne peux les utiliser que pendant la nuit.",
   voyante: "Tu peux découvrir l’identité d’un joueur pendant la nuit.",
-  chasseur: "Si tu meurs, tu emportes une personne avec toi. Le joueur désigné meurt automatiquement et est éliminé de partie.",
-  petite_fille: "Tu peux observer les loups durant la nuit pendant qu'ils votent pour désigner une victime. Mais de manière discrète sinon tu seras la victime des loups.",
-  cupidon: "Tu formes un couple d’amoureux au début de la partie. Les amoureux devront s'arranger à gagner ensemble si l'un des amoureux meurt durant la partie l'autre meurt automatiquement de chagrin d'amour.",
-  pyromane: "Tu joues seul. Tu peux huiler ou bruler une personne durant la nuit. Pour bruler il faut que la ou les personnes aient déjà été huilées.",
-  villageois: "Tu n’as pas de pouvoir spécial. Tu aides le village à démasquer les loups durant la journée.",
-  renard: "Tu désigne une personne durant la nuit. Si aucun loup n’est détecté parmi la personne désignée et ses voisins de gauches et de droite, tu perds ton pouvoir.",
-  corbeau: "Chaque nuit, tu peux désigner un joueur qui recevra deux voix supplémentaires au prochain vote.",
-  ancien: "Tu résistes à une première attaque des loups. Si tu meurts au cosonseil du village tous les villageois perdent automatiquement leurs pouvoirs.",
-  enfant_sauvage: "Tu choisis un modèle au début de la partie. Si ce modèle meurt, tu deviens loup.",
-  petit_chaperon_rouge: "Tu immunisé contre les loups tant que le chasseur n'est pas encore mort.",
-  ange_dechu: "Tu gagnes en début de partie si tu réussis à te faire tué par le village au premier conseil. Sinon tu deviens simple villageois une fois le premier conseil du village passé.",
-  chevalier_epee_rouillee: "Le premier loup à ta gauche meurt dès que tu meurts.",
-  loup_blanc: "Tu es un loup spécial avec un objectif personnel, souvent de finir seul survivant.",
-  loup_infecte: "Tu peux transformer une victime en loup au lieu de simplement l’éliminer. Tu ne peux utiliser qu'une seule fois ce pouvoir durant toute la partie.",
-  grand_mechant_loup: "Tu peux tuer un loup chaque deux nuits si c'est un villageois qui meurt au premier conseil.",
-  garde: "Chaque nuit, tu peux protéger une personne chaque nuit contre toute attaque. Tu peux te protéger également. Mais tu ne peux pas protéger le meme joueur deux nuits consécutives.",
-  frere_1: "Tu fais partie des frères. Les frères se connaissent entre eux et jouent pour le village.",
-  frere_2: "Tu fais partie des frères. Les frères se connaissent entre eux et jouent pour le village.",
-  soeur_1: "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
-  soeur_2: "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
-  soeur_3: "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
-  loup_bavard: "Tu fais partie du camp des loups et tu suis une règle spéciale de communication selon la variante choisie.",
-  vagabond: "Tu joues avec un rôle spécial ou indépendant selon les règles définies par le maître du jeu.",
+  chasseur:
+    "Si tu meurs, tu emportes une personne avec toi. Le joueur désigné meurt automatiquement et est éliminé de partie.",
+  petite_fille:
+    "Tu peux observer les loups durant la nuit pendant qu'ils votent pour désigner une victime. Mais de manière discrète sinon tu seras la victime des loups.",
+  cupidon:
+    "Tu formes un couple d’amoureux au début de la partie. Les amoureux devront s'arranger à gagner ensemble si l'un des amoureux meurt durant la partie l'autre meurt automatiquement de chagrin d'amour.",
+  pyromane:
+    "Tu joues seul. Tu peux huiler ou bruler une personne durant la nuit. Pour bruler il faut que la ou les personnes aient déjà été huilées.",
+  villageois:
+    "Tu n’as pas de pouvoir spécial. Tu aides le village à démasquer les loups durant la journée.",
+  renard:
+    "Tu désigne une personne durant la nuit. Si aucun loup n’est détecté parmi la personne désignée et ses voisins de gauches et de droite, tu perds ton pouvoir.",
+  corbeau:
+    "Chaque nuit, tu peux désigner un joueur qui recevra deux voix supplémentaires au prochain vote.",
+  ancien:
+    "Tu résistes à une première attaque des loups. Si tu meurts au cosonseil du village tous les villageois perdent automatiquement leurs pouvoirs.",
+  enfant_sauvage:
+    "Tu choisis un modèle au début de la partie. Si ce modèle meurt, tu deviens loup.",
+  petit_chaperon_rouge:
+    "Tu immunisé contre les loups tant que le chasseur n'est pas encore mort.",
+  ange_dechu:
+    "Tu gagnes en début de partie si tu réussis à te faire tué par le village au premier conseil. Sinon tu deviens simple villageois une fois le premier conseil du village passé.",
+  chevalier_epee_rouillee:
+    "Le premier loup à ta gauche meurt dès que tu meurts.",
+  loup_blanc:
+    "Tu es un loup spécial avec un objectif personnel, souvent de finir seul survivant.",
+  loup_infecte:
+    "Tu peux transformer une victime en loup au lieu de simplement l’éliminer. Tu ne peux utiliser qu'une seule fois ce pouvoir durant toute la partie.",
+  grand_mechant_loup:
+    "Tu peux tuer un loup chaque deux nuits si c'est un villageois qui meurt au premier conseil.",
+  garde:
+    "Chaque nuit, tu peux protéger une personne chaque nuit contre toute attaque. Tu peux te protéger également. Mais tu ne peux pas protéger le meme joueur deux nuits consécutives.",
+  frere_1:
+    "Tu fais partie des frères. Les frères se connaissent entre eux et jouent pour le village.",
+  frere_2:
+    "Tu fais partie des frères. Les frères se connaissent entre eux et jouent pour le village.",
+  soeur_1:
+    "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
+  soeur_2:
+    "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
+  soeur_3:
+    "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
+  loup_bavard:
+    "Tu fais partie du camp des loups et tu suis une règle spéciale de communication selon la variante choisie.",
+  vagabond:
+    "Tu joues avec un rôle spécial ou indépendant selon les règles définies par le maître du jeu.",
 }
 
 const EMPTY_ROLE_CONFIG = {
@@ -176,10 +200,19 @@ function App() {
     return Object.values(roleConfig).reduce((sum, value) => sum + value, 0)
   }, [roleConfig])
 
+  function getRoleMaxCount(roleKey) {
+    if (roleKey === "loup" || roleKey === "villageois") {
+      return 10
+    }
+
+    return 1
+  }
+
   function changeRoleCount(roleKey, delta) {
     setRoleConfig((prev) => {
       const currentValue = prev[roleKey] || 0
-      const nextValue = Math.max(0, currentValue + delta)
+      const maxValue = getRoleMaxCount(roleKey)
+      const nextValue = Math.min(maxValue, Math.max(0, currentValue + delta))
       return { ...prev, [roleKey]: nextValue }
     })
   }
@@ -979,12 +1012,19 @@ function App() {
                     background: "rgba(255,255,255,0.04)",
                   }}
                 >
-                  <span>{ROLE_LABELS[roleKey]}</span>
+                  <span>
+                    {ROLE_LABELS[roleKey]} (max {getRoleMaxCount(roleKey)})
+                  </span>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <button
                       onClick={() => changeRoleCount(roleKey, -1)}
-                      style={secondaryButtonStyle}
+                      disabled={roleConfig[roleKey] <= 0}
+                      style={{
+                        ...secondaryButtonStyle,
+                        opacity: roleConfig[roleKey] <= 0 ? 0.5 : 1,
+                        cursor: roleConfig[roleKey] <= 0 ? "not-allowed" : "pointer",
+                      }}
                     >
                       -
                     </button>
@@ -993,7 +1033,15 @@ function App() {
 
                     <button
                       onClick={() => changeRoleCount(roleKey, 1)}
-                      style={buttonStyle}
+                      disabled={roleConfig[roleKey] >= getRoleMaxCount(roleKey)}
+                      style={{
+                        ...buttonStyle,
+                        opacity: roleConfig[roleKey] >= getRoleMaxCount(roleKey) ? 0.5 : 1,
+                        cursor:
+                          roleConfig[roleKey] >= getRoleMaxCount(roleKey)
+                            ? "not-allowed"
+                            : "pointer",
+                      }}
                     >
                       +
                     </button>
