@@ -55,7 +55,7 @@ const ROLE_DESCRIPTIONS = {
   enfant_sauvage:
     "Tu choisis un modèle au début de la partie. Si ce modèle meurt, tu deviens loup.",
   petit_chaperon_rouge:
-    "Tu immunisé contre les loups tant que le chasseur n'est pas encore mort.",
+    "Tu es immunisé contre les loups tant que le chasseur n'est pas encore mort.",
   ange_dechu:
     "Tu gagnes en début de partie si tu réussis à te faire tué par le village au premier conseil. Sinon tu deviens simple villageois une fois le premier conseil du village passé.",
   chevalier_epee_rouillee:
@@ -82,6 +82,35 @@ const ROLE_DESCRIPTIONS = {
     "Tu fais partie du camp des loups et tu suis une règle spéciale de communication selon la variante choisie.",
   vagabond:
     "Tu joues avec un rôle spécial ou indépendant selon les règles définies par le maître du jeu.",
+}
+
+const ROLE_EMOJIS = {
+  loup: "🐺",
+  sorciere: "🧪",
+  voyante: "🔮",
+  chasseur: "🏹",
+  petite_fille: "👧",
+  cupidon: "💘",
+  pyromane: "🔥",
+  villageois: "👨‍🌾",
+  renard: "🦊",
+  corbeau: "🐦‍⬛",
+  ancien: "🧓",
+  enfant_sauvage: "🌿",
+  petit_chaperon_rouge: "🧺",
+  ange_dechu: "😈",
+  chevalier_epee_rouillee: "🗡️",
+  loup_blanc: "🐺🤍",
+  loup_infecte: "☣️",
+  grand_mechant_loup: "🐺👑",
+  garde: "🛡️",
+  frere_1: "👦",
+  frere_2: "👦",
+  soeur_1: "👧",
+  soeur_2: "👧",
+  soeur_3: "👧",
+  loup_bavard: "🐺💬",
+  vagabond: "🎒",
 }
 
 const EMPTY_ROLE_CONFIG = {
@@ -385,6 +414,16 @@ function App() {
       return
     }
 
+    if (expectedPlayers < 4) {
+      setMessage("Le nombre minimum de joueurs est 4")
+      return
+    }
+
+    if (expectedPlayers > 44) {
+      setMessage("Le nombre maximum de joueurs est 44")
+      return
+    }
+
     const code = generateCode()
     const sessionId = getSessionId()
 
@@ -569,6 +608,11 @@ function App() {
 
     if (expectedPlayers < 4) {
       setMessage("Le nombre minimum de joueurs est 4")
+      return
+    }
+
+    if (expectedPlayers > 44) {
+      setMessage("Le nombre maximum de joueurs est 44")
       return
     }
 
@@ -968,8 +1012,12 @@ function App() {
               <input
                 type="number"
                 min="4"
+                max="44"
                 value={expectedPlayers}
-                onChange={(e) => setExpectedPlayers(Number(e.target.value))}
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  setExpectedPlayers(Math.min(44, Math.max(4, value || 4)))
+                }}
                 style={inputStyle}
               />
 
@@ -1186,10 +1234,24 @@ function App() {
             </ul>
 
             {me?.role && (
-              <div style={{ marginTop: "20px" }}>
-                <p style={{ fontWeight: "bold" }}>
+              <div
+                style={{
+                  marginTop: "20px",
+                  textAlign: "center",
+                  padding: "20px",
+                  borderRadius: "16px",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                }}
+              >
+                <div style={{ fontSize: "64px", marginBottom: "10px" }}>
+                  {ROLE_EMOJIS[me.role] || "🎭"}
+                </div>
+
+                <p style={{ fontWeight: "bold", fontSize: "24px", marginBottom: "10px" }}>
                   Ton rôle : {ROLE_LABELS[me.role] || me.role}
                 </p>
+
                 <p>{ROLE_DESCRIPTIONS[me.role] || ""}</p>
               </div>
             )}
