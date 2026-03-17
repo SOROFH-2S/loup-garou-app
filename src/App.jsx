@@ -37,29 +37,29 @@ const ROLE_DESCRIPTIONS = {
     "Tu disposes de deux potions dont une potion de vie et une potion de mort utilisable une fois chacune durant toute la partie. Tu ne peux les utiliser que pendant la nuit.",
   voyante: "Tu peux découvrir l’identité d’un joueur pendant la nuit.",
   chasseur:
-    "Si tu meurs, tu emportes une personne avec toi. Le joueur désigné meurt automatiquement et est éliminé de partie.",
+    "Tu possèdes un fusil avec une seule balle. Si tu es éliminé au cours de la partie, tu peux utiliser cette balle pour tuer immédiatement une personne.",
   petite_fille:
     "Tu peux observer les loups durant la nuit pendant qu'ils votent pour désigner une victime. Mais de manière discrète sinon tu seras la victime des loups.",
   cupidon:
-    "Tu formes un couple d’amoureux au début de la partie. Les amoureux devront s'arranger à gagner ensemble si l'un des amoureux meurt durant la partie l'autre meurt automatiquement de chagrin d'amour.",
+    "Tu es du côté du village. Au début de la partie, tu formes un couple d’amoureux. Les amoureux doivent gagner ensemble. Si l’un des deux meurt, l’autre meurt automatiquement de chagrin d’amour.",
   pyromane:
-    "Tu joues seul. Tu peux huiler ou bruler une personne durant la nuit. Pour bruler il faut que la ou les personnes aient déjà été huilées.",
+    "Tu joues seul. Tu peux huiler ou bruler une personne durant la nuit. Pour bruler il faut que la ou les personnes aient déjà été huilées. Tu gagnes si tu restes le seul survivant en fin de partie.",
   villageois:
     "Tu n’as pas de pouvoir spécial. Tu aides le village à démasquer les loups durant la journée.",
   renard:
-    "Tu désigne une personne durant la nuit. Si aucun loup n’est détecté parmi la personne désignée et ses voisins de gauches et de droite, tu perds ton pouvoir.",
+    "Tu désignes une personne durant la nuit. Si aucun loup n’est détecté parmi la personne désignée et ses voisins de gauche et de droite, tu perds ton pouvoir.",
   corbeau:
     "Chaque nuit, tu peux désigner un joueur qui recevra deux voix supplémentaires au prochain vote.",
   ancien:
-    "Tu résistes à une première attaque des loups. Si tu meurts au cosonseil du village tous les villageois perdent automatiquement leurs pouvoirs.",
+    "Tu résistes à une première attaque des loups. Si tu meurs au conseil du village, tous les villageois perdent automatiquement leurs pouvoirs.",
   enfant_sauvage:
     "Tu choisis un modèle au début de la partie. Si ce modèle meurt, tu deviens loup.",
   petit_chaperon_rouge:
     "Tu es immunisé contre les loups tant que le chasseur n'est pas encore mort.",
   ange_dechu:
-    "Tu gagnes en début de partie si tu réussis à te faire tué par le village au premier conseil. Sinon tu deviens simple villageois une fois le premier conseil du village passé.",
+    "Tu gagnes seul si tu réussis à te faire éliminer par le village au premier conseil. Sinon, une fois le premier conseil passé, tu redeviens un simple villageois.",
   chevalier_epee_rouillee:
-    "Le premier loup à ta gauche meurt dès que tu meurts.",
+    "Le premier loup à ta gauche meurt dès que tu meurs.",
   loup_blanc:
     "Tu es un loup spécial avec un objectif personnel, souvent de finir seul survivant.",
   loup_infecte:
@@ -67,7 +67,7 @@ const ROLE_DESCRIPTIONS = {
   grand_mechant_loup:
     "Tu peux tuer un loup chaque deux nuits si c'est un villageois qui meurt au premier conseil.",
   garde:
-    "Chaque nuit, tu peux protéger une personne chaque nuit contre toute attaque. Tu peux te protéger également. Mais tu ne peux pas protéger le meme joueur deux nuits consécutives.",
+    "Chaque nuit, tu peux protéger une personne contre toute attaque. Tu peux te protéger également. Mais tu ne peux pas protéger le même joueur deux nuits consécutives.",
   frere_1:
     "Tu fais partie des frères. Les frères se connaissent entre eux et jouent pour le village.",
   frere_2:
@@ -81,14 +81,14 @@ const ROLE_DESCRIPTIONS = {
   loup_bavard:
     "Tu fais partie du camp des loups et tu suis une règle spéciale de communication selon la variante choisie.",
   vagabond:
-    "Tu joues avec un rôle spécial ou indépendant selon les règles définies par le maître du jeu.",
+    "Tu es du côté du village. Chaque nuit, tu peux dormir chez une personne et cette personne devient automatiquement immunisée contre toute attaque durant la nuit.",
 }
 
 const ROLE_EMOJIS = {
   loup: "🐺",
   sorciere: "🧪",
   voyante: "🔮",
-  chasseur: "🏹",
+  chasseur: "🔫",
   petite_fille: "👧",
   cupidon: "💘",
   pyromane: "🔥",
@@ -353,36 +353,23 @@ function App() {
 
   function computeWinner(playersList) {
     const alivePlayers = playersList.filter((p) => p.alive)
+
     const wolfRoles = ["loup", "loup_blanc", "loup_infecte", "grand_mechant_loup", "loup_bavard"]
 
     const wolves = alivePlayers.filter((p) => wolfRoles.includes(p.role))
-    const nonWolves = alivePlayers.filter((p) => !wolfRoles.includes(p.role))
+    const villageCampRoles = alivePlayers.filter((p) => !wolfRoles.includes(p.role) && p.role !== "pyromane")
+
     const pyromane = alivePlayers.filter((p) => p.role === "pyromane")
-    const cupidon = alivePlayers.filter((p) => p.role === "cupidon")
-    const angeDechu = alivePlayers.filter((p) => p.role === "ange_dechu")
-    const vagabond = alivePlayers.filter((p) => p.role === "vagabond")
 
     if (pyromane.length === 1 && alivePlayers.length === 1) {
       return "Le pyromane gagne"
-    }
-
-    if (cupidon.length === 1 && alivePlayers.length === 1) {
-      return "Cupidon gagne"
-    }
-
-    if (angeDechu.length === 1 && alivePlayers.length === 1) {
-      return "L’ange déchu gagne"
-    }
-
-    if (vagabond.length === 1 && alivePlayers.length === 1) {
-      return "Le vagabond gagne"
     }
 
     if (wolves.length === 0 && alivePlayers.length > 0) {
       return "Le village gagne"
     }
 
-    if (wolves.length > 0 && wolves.length >= nonWolves.length) {
+    if (villageCampRoles.length === 0 && wolves.length > 0) {
       return "Les loups gagnent"
     }
 
@@ -1176,17 +1163,14 @@ function App() {
                 <button onClick={() => endGameManually("Les loups gagnent")} style={secondaryButtonStyle}>
                   Loups gagnent
                 </button>
-                <button onClick={() => endGameManually("Cupidon gagne")} style={secondaryButtonStyle}>
-                  Cupidon gagne
+                <button onClick={() => endGameManually("Les amoureux gagnent")} style={secondaryButtonStyle}>
+                  Amoureux gagnent
                 </button>
                 <button onClick={() => endGameManually("Le pyromane gagne")} style={secondaryButtonStyle}>
                   Pyromane gagne
                 </button>
                 <button onClick={() => endGameManually("L’ange déchu gagne")} style={secondaryButtonStyle}>
                   Ange déchu gagne
-                </button>
-                <button onClick={() => endGameManually("Le vagabond gagne")} style={secondaryButtonStyle}>
-                  Vagabond gagne
                 </button>
               </div>
 
