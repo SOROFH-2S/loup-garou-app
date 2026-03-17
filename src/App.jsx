@@ -21,27 +21,43 @@ const ROLE_LABELS = {
   loup_blanc: "Loup blanc",
   loup_infecte: "Loup infecté",
   grand_mechant_loup: "Grand méchant loup",
+  garde: "Garde",
+  frere_1: "Frère 1",
+  frere_2: "Frère 2",
+  soeur_1: "Soeur 1",
+  soeur_2: "Soeur 2",
+  soeur_3: "Soeur 3",
+  loup_bavard: "Loup bavard",
+  vagabond: "Vagabond",
 }
 
 const ROLE_DESCRIPTIONS = {
   loup: "Tu élimines les villageois la nuit avec les autres loups.",
-  sorciere: "Tu disposes de pouvoirs spéciaux selon les règles du maître du jeu.",
+  sorciere: "Tu disposes de deux potions dont une potion de vie et une potion de mort utilisable une fois chacune durant toute la partie. Tu ne peux les utiliser que pendant la nuit.",
   voyante: "Tu peux découvrir l’identité d’un joueur pendant la nuit.",
-  chasseur: "Si tu meurs, tu peux agir selon les règles prévues.",
-  petite_fille: "Tu as une capacité d’observation spéciale selon les règles.",
-  cupidon: "Tu peux former un couple d’amoureux au début de la partie.",
-  pyromane: "Tu joues seul selon les règles définies par le maître du jeu.",
-  villageois: "Tu n’as pas de pouvoir spécial. Tu aides le village.",
-  renard: "Tu peux sonder un groupe de joueurs. Si aucun loup n’est détecté, tu perds ton pouvoir selon les règles choisies.",
-  corbeau: "Chaque nuit, tu peux désigner un joueur qui recevra des voix supplémentaires au prochain vote.",
-  ancien: "Tu résistes à une première attaque des loups selon les règles du maître du jeu.",
+  chasseur: "Si tu meurs, tu emportes une personne avec toi. Le joueur désigné meurt automatiquement et est éliminé de partie.",
+  petite_fille: "Tu peux observer les loups durant la nuit pendant qu'ils votent pour désigner une victime. Mais de manière discrète sinon tu seras la victime des loups.",
+  cupidon: "Tu formes un couple d’amoureux au début de la partie. Les amoureux devront s'arranger à gagner ensemble si l'un des amoureux meurt durant la partie l'autre meurt automatiquement de chagrin d'amour.",
+  pyromane: "Tu joues seul. Tu peux huiler ou bruler une personne durant la nuit. Pour bruler il faut que la ou les personnes aient déjà été huilées.",
+  villageois: "Tu n’as pas de pouvoir spécial. Tu aides le village à démasquer les loups durant la journée.",
+  renard: "Tu désigne une personne durant la nuit. Si aucun loup n’est détecté parmi la personne désignée et ses voisins de gauches et de droite, tu perds ton pouvoir.",
+  corbeau: "Chaque nuit, tu peux désigner un joueur qui recevra deux voix supplémentaires au prochain vote.",
+  ancien: "Tu résistes à une première attaque des loups. Si tu meurts au cosonseil du village tous les villageois perdent automatiquement leurs pouvoirs.",
   enfant_sauvage: "Tu choisis un modèle au début de la partie. Si ce modèle meurt, tu deviens loup.",
-  petit_chaperon_rouge: "Tu disposes d’un pouvoir spécial de protection ou d’information selon la variante utilisée.",
-  ange_dechu: "Tu joues avec une condition de victoire personnelle définie par le maître du jeu.",
-  chevalier_epee_rouillee: "Tu peux infliger un effet spécial à un loup si tu es attaqué ou éliminé selon les règles choisies.",
+  petit_chaperon_rouge: "Tu immunisé contre les loups tant que le chasseur n'est pas encore mort.",
+  ange_dechu: "Tu gagnes en début de partie si tu réussis à te faire tué par le village au premier conseil. Sinon tu deviens simple villageois une fois le premier conseil du village passé.",
+  chevalier_epee_rouillee: "Le premier loup à ta gauche meurt dès que tu meurts.",
   loup_blanc: "Tu es un loup spécial avec un objectif personnel, souvent de finir seul survivant.",
-  loup_infecte: "Tu peux, selon les règles choisies, transformer une victime en loup au lieu de simplement l’éliminer.",
-  grand_mechant_loup: "Tant qu’aucun loup n’est mort, tu peux bénéficier d’un pouvoir offensif supplémentaire selon la variante.",
+  loup_infecte: "Tu peux transformer une victime en loup au lieu de simplement l’éliminer. Tu ne peux utiliser qu'une seule fois ce pouvoir durant toute la partie.",
+  grand_mechant_loup: "Tu peux tuer un loup chaque deux nuits si c'est un villageois qui meurt au premier conseil.",
+  garde: "Chaque nuit, tu peux protéger une personne chaque nuit contre toute attaque. Tu peux te protéger également. Mais tu ne peux pas protéger le meme joueur deux nuits consécutives.",
+  frere_1: "Tu fais partie des frères. Les frères se connaissent entre eux et jouent pour le village.",
+  frere_2: "Tu fais partie des frères. Les frères se connaissent entre eux et jouent pour le village.",
+  soeur_1: "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
+  soeur_2: "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
+  soeur_3: "Tu fais partie des soeurs. Les soeurs se connaissent entre elles et jouent pour le village.",
+  loup_bavard: "Tu fais partie du camp des loups et tu suis une règle spéciale de communication selon la variante choisie.",
+  vagabond: "Tu joues avec un rôle spécial ou indépendant selon les règles définies par le maître du jeu.",
 }
 
 const EMPTY_ROLE_CONFIG = {
@@ -63,6 +79,14 @@ const EMPTY_ROLE_CONFIG = {
   loup_blanc: 0,
   loup_infecte: 0,
   grand_mechant_loup: 0,
+  garde: 0,
+  frere_1: 0,
+  frere_2: 0,
+  soeur_1: 0,
+  soeur_2: 0,
+  soeur_3: 0,
+  loup_bavard: 0,
+  vagabond: 0,
 }
 
 const STORAGE_KEYS = {
@@ -204,10 +228,29 @@ function App() {
       return config
     }
 
+    if (playerCount <= 14) {
+      config.loup = 1
+      config.loup_blanc = 1
+      config.loup_infecte = 1
+      config.grand_mechant_loup = 1
+      config.voyante = 1
+      config.sorciere = 1
+      config.chasseur = 1
+      config.cupidon = 1
+      config.corbeau = 1
+      config.ancien = 1
+      config.garde = 1
+      config.frere_1 = 1
+      config.frere_2 = 1
+      config.villageois = playerCount - 13
+      return config
+    }
+
     config.loup = 1
     config.loup_blanc = 1
     config.loup_infecte = 1
     config.grand_mechant_loup = 1
+    config.loup_bavard = 1
     config.voyante = 1
     config.sorciere = 1
     config.chasseur = 1
@@ -219,7 +262,14 @@ function App() {
     config.petit_chaperon_rouge = 1
     config.ange_dechu = 1
     config.chevalier_epee_rouillee = 1
-    config.villageois = Math.max(0, playerCount - 15)
+    config.garde = 1
+    config.frere_1 = 1
+    config.frere_2 = 1
+    config.soeur_1 = 1
+    config.soeur_2 = 1
+    config.soeur_3 = 1
+    config.vagabond = 1
+    config.villageois = Math.max(0, playerCount - 23)
 
     return config
   }
@@ -241,13 +291,14 @@ function App() {
 
   function computeWinner(playersList) {
     const alivePlayers = playersList.filter((p) => p.alive)
-    const wolfRoles = ["loup", "loup_blanc", "loup_infecte", "grand_mechant_loup"]
+    const wolfRoles = ["loup", "loup_blanc", "loup_infecte", "grand_mechant_loup", "loup_bavard"]
 
     const wolves = alivePlayers.filter((p) => wolfRoles.includes(p.role))
     const nonWolves = alivePlayers.filter((p) => !wolfRoles.includes(p.role))
     const pyromane = alivePlayers.filter((p) => p.role === "pyromane")
     const cupidon = alivePlayers.filter((p) => p.role === "cupidon")
     const angeDechu = alivePlayers.filter((p) => p.role === "ange_dechu")
+    const vagabond = alivePlayers.filter((p) => p.role === "vagabond")
 
     if (pyromane.length === 1 && alivePlayers.length === 1) {
       return "Le pyromane gagne"
@@ -259,6 +310,10 @@ function App() {
 
     if (angeDechu.length === 1 && alivePlayers.length === 1) {
       return "L’ange déchu gagne"
+    }
+
+    if (vagabond.length === 1 && alivePlayers.length === 1) {
+      return "Le vagabond gagne"
     }
 
     if (wolves.length === 0 && alivePlayers.length > 0) {
@@ -1033,6 +1088,9 @@ function App() {
                 </button>
                 <button onClick={() => endGameManually("L’ange déchu gagne")} style={secondaryButtonStyle}>
                   Ange déchu gagne
+                </button>
+                <button onClick={() => endGameManually("Le vagabond gagne")} style={secondaryButtonStyle}>
+                  Vagabond gagne
                 </button>
               </div>
 
