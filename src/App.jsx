@@ -150,6 +150,17 @@ const STORAGE_KEYS = {
   hostName: "lg_host_name",
 }
 
+const PHASE_LABELS = {
+  lobby: "Salle d’attente",
+  setup: "Préparation",
+  night: "Nuit",
+  night_resolve: "Résolution de la nuit",
+  day: "Jour",
+  vote: "Vote du village",
+  vote_resolve: "Résolution du vote",
+  ended: "Partie terminée",
+}
+
 function App() {
   const [entryMode, setEntryMode] = useState("")
   const [hostName, setHostName] = useState("")
@@ -233,7 +244,6 @@ function App() {
     if (roleKey === "loup" || roleKey === "villageois") {
       return 10
     }
-
     return 1
   }
 
@@ -244,6 +254,84 @@ function App() {
       const nextValue = Math.min(maxValue, Math.max(0, currentValue + delta))
       return { ...prev, [roleKey]: nextValue }
     })
+  }
+
+  function getPhaseLabel(phase) {
+    return PHASE_LABELS[phase] || phase || "Phase inconnue"
+  }
+
+  function getNextPhase(currentPhase) {
+    switch (currentPhase) {
+      case "setup":
+        return "night"
+      case "night":
+        return "night_resolve"
+      case "night_resolve":
+        return "day"
+      case "day":
+        return "vote"
+      case "vote":
+        return "vote_resolve"
+      case "vote_resolve":
+        return "night"
+      default:
+        return "setup"
+    }
+  }
+
+  async function goToNextPhase() {
+    if (!currentGame) return
+
+    if (currentGame.host_session_id !== mySessionId) {
+      setMessage("Seul le maître du jeu peut changer de phase")
+      return
+    }
+
+    if (currentGame.status !== "started") {
+      setMessage("La partie doit être commencée")
+      return
+    }
+
+    const currentPhase = currentGame.phase || "setup"
+    const nextPhase = getNextPhase(currentPhase)
+
+    let nextNightNumber = currentGame.night_number || 0
+    let nextDayNumber = currentGame.day_number || 0
+    let firstVoteDone = currentGame.first_vote_done || false
+
+    if (nextPhase === "night") {
+      nextNightNumber += 1
+    }
+
+    if (nextPhase === "day") {
+      nextDayNumber += 1
+    }
+
+    if (nextPhase === "vote_resolve" && !firstVoteDone) {
+      firstVoteDone = true
+    }
+
+    const { data, error } = await supabase
+      .from("games")
+      .update({
+        phase: nextPhase,
+        night_number: nextNightNumber,
+        day_number: nextDayNumber,
+        first_vote_done: firstVoteDone,
+      })
+      .eq("id", currentGame.id)
+      .eq("host_session_id", mySessionId)
+      .select()
+      .single()
+
+    if (error) {
+      console.error(error)
+      setMessage("Erreur lors du changement de phase")
+      return
+    }
+
+    setCurrentGame(data)
+    setMessage(`Phase actuelle : ${getPhaseLabel(data.phase)}`)
   }
 
   function generateSuggestedRoles(playerCount) {
@@ -357,8 +445,9 @@ function App() {
     const wolfRoles = ["loup", "loup_blanc", "loup_infecte", "grand_mechant_loup", "loup_bavard"]
 
     const wolves = alivePlayers.filter((p) => wolfRoles.includes(p.role))
-    const villageCampRoles = alivePlayers.filter((p) => !wolfRoles.includes(p.role) && p.role !== "pyromane")
-
+    const villageCampRoles = alivePlayers.filter(
+      (p) => !wolfRoles.includes(p.role) && p.role !== "pyromane"
+    )
     const pyromane = alivePlayers.filter((p) => p.role === "pyromane")
 
     if (pyromane.length === 1 && alivePlayers.length === 1) {
@@ -381,6 +470,7 @@ function App() {
       .from("games")
       .update({
         status: "ended",
+        phase: "ended",
         winner,
         ended_at: new Date().toISOString(),
       })
@@ -427,6 +517,10 @@ function App() {
           status: "lobby",
           expected_players: expectedPlayers,
           role_config: roleConfig,
+          phase: "lobby",
+          night_number: 0,
+          day_number: 0,
+          first_vote_done: false,
         },
       ])
       .select()
@@ -699,6 +793,10 @@ function App() {
         started_at: new Date().toISOString(),
         winner: null,
         ended_at: null,
+        phase: "setup",
+        night_number: 0,
+        day_number: 0,
+        first_vote_done: false,
       })
       .eq("id", currentGame.id)
       .eq("host_session_id", mySessionId)
@@ -1127,12 +1225,26 @@ function App() {
 
               <p><strong>Code de la partie :</strong> {currentGame.code}</p>
               <p><strong>Statut :</strong> {currentGame.status}</p>
+              <p><strong>Phase actuelle :</strong> {getPhaseLabel(currentGame.phase)}</p>
+              <p><strong>Nuit :</strong> {currentGame.night_number || 0}</p>
+              <p><strong>Jour :</strong> {currentGame.day_number || 0}</p>
               <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
 
               {isEnded && (
                 <p style={{ marginTop: "20px", fontWeight: "bold", color: "#ff6b57" }}>
                   Partie terminée{currentGame.winner ? ` — ${currentGame.winner}` : ""}
                 </p>
+              )}
+
+              {!isEnded && (
+                <>
+                  <h3>Gestion des phases</h3>
+                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
+                    <button onClick={goToNextPhase} style={buttonStyle}>
+                      Passer à la phase suivante
+                    </button>
+                  </div>
+                </>
               )}
 
               <h3>Joueurs</h3>
@@ -1145,12 +1257,14 @@ function App() {
                       {player.alive ? " — vivant" : " — mort"}
                     </span>
 
-                    <button
-                      onClick={() => markPlayerDead(player.id, !player.alive)}
-                      style={{ ...secondaryButtonStyle, marginLeft: "12px" }}
-                    >
-                      {player.alive ? "Marquer mort" : "Rendre vivant"}
-                    </button>
+                    {!isEnded && (
+                      <button
+                        onClick={() => markPlayerDead(player.id, !player.alive)}
+                        style={{ ...secondaryButtonStyle, marginLeft: "12px" }}
+                      >
+                        {player.alive ? "Marquer mort" : "Rendre vivant"}
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -1199,6 +1313,15 @@ function App() {
 
             <p><strong>Code de la partie :</strong> {currentGame.code}</p>
             <p><strong>Statut :</strong> {currentGame.status}</p>
+
+            {currentGame.status === "started" && (
+              <>
+                <p><strong>Phase actuelle :</strong> {getPhaseLabel(currentGame.phase)}</p>
+                <p><strong>Nuit :</strong> {currentGame.night_number || 0}</p>
+                <p><strong>Jour :</strong> {currentGame.day_number || 0}</p>
+              </>
+            )}
+
             <p><strong>Maître du jeu :</strong> {currentGame.host_name}</p>
             <p><strong>Joueurs connectés :</strong> {players.length} / {currentGame.expected_players}</p>
 
