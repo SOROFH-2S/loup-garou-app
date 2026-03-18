@@ -20,7 +20,7 @@ import {
   Users,
 } from "lucide-react"
 import { supabase } from "./supabase"
-import wolfMoon from "./assets/wolf-moon.png"
+import wolfMoon from "./assets/wolf-bg.webp"
 
 const ROLE_LABELS = {
   loup: "Loup-garou",
@@ -202,7 +202,7 @@ function App() {
     villageois: 4,
   })
   const [activeHostTab, setActiveHostTab] = useState("game")
-  const [activePlayerTab, setActivePlayerTab] = useState("profile")
+  const [activePlayerTab, setActivePlayerTab] = useState("profil")
   const [playerFilter, setPlayerFilter] = useState("all")
 
   function generateCode() {
@@ -263,7 +263,7 @@ function App() {
     setMySessionId("")
     setExpectedPlayers(10)
     setActiveHostTab("game")
-    setActivePlayerTab("profile")
+    setActivePlayerTab("profil")
     setPlayerFilter("all")
     setRoleConfig({
       ...EMPTY_ROLE_CONFIG,
@@ -298,10 +298,7 @@ function App() {
     setRoleConfig((prev) => {
       const currentValue = prev[roleKey] || 0
       const maxValue = getRoleMaxCount(roleKey)
-      const nextValue = Math.min(
-        maxValue,
-        Math.max(0, currentValue + delta)
-      )
+      const nextValue = Math.min(maxValue, Math.max(0, currentValue + delta))
       return { ...prev, [roleKey]: nextValue }
     })
   }
@@ -315,10 +312,7 @@ function App() {
   }
 
   function getPhaseSubtext(phase) {
-    return (
-      PHASE_SUBTEXT[phase] ||
-      "Le maître du jeu prépare l’étape suivante de l’histoire."
-    )
+    return PHASE_SUBTEXT[phase] || "Le maître du jeu prépare l’étape suivante de l’histoire."
   }
 
   function getNextPhase(currentPhase) {
@@ -500,13 +494,9 @@ function App() {
     )
     const pyromane = alivePlayers.filter((p) => p.role === "pyromane")
 
-    if (pyromane.length === 1 && alivePlayers.length === 1)
-      return "Le pyromane gagne"
-    if (wolves.length === 0 && alivePlayers.length > 0)
-      return "Le village gagne"
-    if (villageCampRoles.length === 0 && wolves.length > 0)
-      return "Les loups gagnent"
-
+    if (pyromane.length === 1 && alivePlayers.length === 1) return "Le pyromane gagne"
+    if (wolves.length === 0 && alivePlayers.length > 0) return "Le village gagne"
+    if (villageCampRoles.length === 0 && wolves.length > 0) return "Les loups gagnent"
     return null
   }
 
@@ -646,9 +636,7 @@ function App() {
       return
     }
 
-    const existingSameSessionPlayer = existingPlayers.find(
-      (p) => p.session_id === sessionId
-    )
+    const existingSameSessionPlayer = existingPlayers.find((p) => p.session_id === sessionId)
 
     if (existingSameSessionPlayer) {
       persistGameSession({
@@ -787,9 +775,7 @@ function App() {
     }
 
     if (!playersData || playersData.length !== currentGame.expected_players) {
-      setMessage(
-        "Le nombre de joueurs connectés doit correspondre au nombre configuré"
-      )
+      setMessage("Le nombre de joueurs connectés doit correspondre au nombre configuré")
       return
     }
 
@@ -940,10 +926,8 @@ function App() {
     async function restoreSession() {
       const savedGameId = sessionStorage.getItem(STORAGE_KEYS.gameId)
       const savedEntryMode = sessionStorage.getItem(STORAGE_KEYS.entryMode)
-      const savedPlayerName =
-        sessionStorage.getItem(STORAGE_KEYS.playerName) || ""
-      const savedHostName =
-        sessionStorage.getItem(STORAGE_KEYS.hostName) || ""
+      const savedPlayerName = sessionStorage.getItem(STORAGE_KEYS.playerName) || ""
+      const savedHostName = sessionStorage.getItem(STORAGE_KEYS.hostName) || ""
 
       const sessionId = getSessionId()
       setMySessionId(sessionId)
@@ -1065,40 +1049,40 @@ function App() {
   function getRoleAccent(roleKey) {
     if (WOLF_ROLES.includes(roleKey)) {
       return {
-        bg: "rgba(27,78,255,0.18)",
-        border: "rgba(27,78,255,0.35)",
-        text: "#2f6bff",
+        bg: "rgba(210, 66, 255, 0.14)",
+        border: "rgba(210, 66, 255, 0.32)",
+        text: "#d946ef",
       }
     }
 
     if (roleKey === "voyante") {
       return {
-        bg: "rgba(102,112,255,0.14)",
-        border: "rgba(102,112,255,0.3)",
-        text: "#94a3ff",
+        bg: "rgba(88, 240, 255, 0.14)",
+        border: "rgba(88, 240, 255, 0.32)",
+        text: "#67e8f9",
       }
     }
 
     if (roleKey === "sorciere") {
       return {
-        bg: "rgba(236,72,153,0.14)",
-        border: "rgba(236,72,153,0.3)",
+        bg: "rgba(244, 114, 182, 0.14)",
+        border: "rgba(244, 114, 182, 0.3)",
         text: "#f472b6",
       }
     }
 
     if (roleKey === "garde") {
       return {
-        bg: "rgba(16,185,129,0.14)",
-        border: "rgba(16,185,129,0.28)",
-        text: "#34d399",
+        bg: "rgba(34, 211, 238, 0.14)",
+        border: "rgba(34, 211, 238, 0.28)",
+        text: "#22d3ee",
       }
     }
 
     return {
-      bg: "rgba(148,163,184,0.12)",
-      border: "rgba(148,163,184,0.22)",
-      text: "#94a3b8",
+      bg: "rgba(129, 140, 248, 0.12)",
+      border: "rgba(129, 140, 248, 0.22)",
+      text: "#a5b4fc",
     }
   }
 
@@ -1106,22 +1090,31 @@ function App() {
     page: {
       minHeight: "100vh",
       background:
-        "radial-gradient(circle at top, rgba(20,42,120,0.35), rgba(4,10,26,0.96) 45%), #040916",
+        "radial-gradient(circle at 50% 18%, rgba(88,240,255,0.18), rgba(6,10,24,0.0) 28%), radial-gradient(circle at 50% 55%, rgba(217,70,239,0.16), rgba(6,10,24,0.0) 30%), linear-gradient(180deg, #050816 0%, #070b1d 35%, #04070f 100%)",
       color: "#f8fafc",
       fontFamily: "Inter, system-ui, sans-serif",
       paddingBottom: "120px",
       position: "relative",
       overflow: "hidden",
     },
+
     forestGlow: {
       position: "fixed",
       inset: 0,
-      backgroundImage: `linear-gradient(rgba(4,10,26,0.5), rgba(4,10,26,0.95)), url(${wolfMoon})`,
+      backgroundImage: `
+        linear-gradient(rgba(4,6,16,0.50), rgba(4,6,16,0.84)),
+        radial-gradient(circle at 50% 22%, rgba(110,255,241,0.22), rgba(0,0,0,0) 24%),
+        radial-gradient(circle at 52% 62%, rgba(236,72,153,0.16), rgba(0,0,0,0) 22%),
+        url(${wolfMoon})
+      `,
       backgroundSize: "cover",
-      backgroundPosition: "center bottom",
-      opacity: 0.18,
+      backgroundPosition: "center center",
+      backgroundRepeat: "no-repeat",
+      opacity: 1,
       pointerEvents: "none",
+      filter: "saturate(1.08) contrast(1.02)",
     },
+
     mobile: {
       position: "relative",
       zIndex: 1,
@@ -1129,68 +1122,93 @@ function App() {
       maxWidth: "480px",
       margin: "0 auto",
       minHeight: "100vh",
-      borderLeft: "1px solid rgba(148,163,184,0.12)",
-      borderRight: "1px solid rgba(148,163,184,0.12)",
+      borderLeft: "1px solid rgba(103,232,249,0.08)",
+      borderRight: "1px solid rgba(217,70,239,0.08)",
       background:
-        "linear-gradient(180deg, rgba(5,10,28,0.92), rgba(5,10,24,0.98))",
-      boxShadow: "0 30px 80px rgba(0,0,0,0.45)",
+        "linear-gradient(180deg, rgba(5,8,22,0.58), rgba(5,8,20,0.76), rgba(4,7,15,0.88))",
+      boxShadow: "0 30px 80px rgba(0,0,0,0.55)",
+      backdropFilter: "blur(4px)",
     },
+
     topBar: {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
       padding: "22px 20px 18px",
-      borderBottom: "1px solid rgba(148,163,184,0.14)",
+      borderBottom: "1px solid rgba(103,232,249,0.10)",
+      background: "rgba(5, 8, 20, 0.18)",
+      backdropFilter: "blur(8px)",
     },
+
     iconBtn: {
       width: 44,
       height: 44,
       borderRadius: 22,
-      border: "1px solid rgba(148,163,184,0.18)",
-      background: "rgba(255,255,255,0.03)",
-      color: "#e5e7eb",
+      border: "1px solid rgba(129,140,248,0.18)",
+      background: "rgba(255,255,255,0.04)",
+      color: "#eef2ff",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.22)",
     },
+
     screen: {
       padding: "20px",
     },
+
     headingXL: {
       fontSize: 52,
       lineHeight: 1,
       margin: "0 0 16px",
       fontWeight: 800,
       letterSpacing: "-0.04em",
+      textShadow: "0 0 24px rgba(88,240,255,0.08)",
     },
+
     subtitle: {
-      color: "#94a3b8",
+      color: "#c4d0f1",
       fontSize: 17,
       lineHeight: 1.65,
       margin: 0,
     },
+
+    labelUpper: {
+      fontSize: 12,
+      letterSpacing: "0.28em",
+      color: "#67e8f9",
+      textTransform: "uppercase",
+      fontWeight: 700,
+    },
+
     glassCard: {
       background:
-        "linear-gradient(180deg, rgba(18,26,48,0.92), rgba(10,17,35,0.95))",
-      border: "1px solid rgba(74,95,148,0.32)",
+        "linear-gradient(180deg, rgba(11,16,34,0.82), rgba(8,12,26,0.90))",
+      border: "1px solid rgba(109, 120, 255, 0.16)",
       borderRadius: 24,
       padding: 20,
-      boxShadow: "0 16px 40px rgba(2,8,23,0.45)",
+      boxShadow:
+        "0 18px 40px rgba(0,0,0,0.40), inset 0 1px 0 rgba(103,232,249,0.05)",
+      backdropFilter: "blur(10px)",
     },
+
     softCard: {
       background:
-        "linear-gradient(180deg, rgba(18,26,48,0.8), rgba(12,18,34,0.84))",
-      border: "1px solid rgba(148,163,184,0.14)",
+        "linear-gradient(180deg, rgba(12,18,38,0.74), rgba(8,12,25,0.84))",
+      border: "1px solid rgba(129,140,248,0.12)",
       borderRadius: 20,
       padding: 18,
+      boxShadow: "0 10px 30px rgba(0,0,0,0.28)",
     },
+
     primaryBtn: {
       width: "100%",
       minHeight: 58,
       borderRadius: 18,
-      border: "none",
-      background: "linear-gradient(180deg, #1f4dff, #1741d0)",
+      border: "1px solid rgba(103,232,249,0.18)",
+      background:
+        "linear-gradient(180deg, #1d4ed8 0%, #2563eb 45%, #6d28d9 100%)",
       color: "white",
       fontSize: 17,
       fontWeight: 800,
@@ -1199,14 +1217,16 @@ function App() {
       alignItems: "center",
       justifyContent: "center",
       gap: 10,
-      boxShadow: "0 14px 28px rgba(29,78,216,0.35)",
+      boxShadow:
+        "0 14px 30px rgba(37,99,235,0.32), 0 0 24px rgba(217,70,239,0.12)",
       cursor: "pointer",
     },
+
     secondaryBtn: {
       minHeight: 48,
       borderRadius: 16,
-      border: "1px solid rgba(96,165,250,0.28)",
-      background: "rgba(19,40,108,0.35)",
+      border: "1px solid rgba(129,140,248,0.20)",
+      background: "rgba(21, 28, 54, 0.58)",
       color: "#dbeafe",
       fontWeight: 700,
       display: "flex",
@@ -1215,41 +1235,48 @@ function App() {
       gap: 8,
       cursor: "pointer",
       padding: "0 16px",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
     },
+
     field: {
       width: "100%",
       height: 56,
       borderRadius: 16,
-      border: "1px solid rgba(148,163,184,0.16)",
+      border: "1px solid rgba(129,140,248,0.16)",
       background: "rgba(255,255,255,0.04)",
       color: "#f8fafc",
       fontSize: 17,
       padding: "0 16px",
       outline: "none",
       boxSizing: "border-box",
+      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.03)",
     },
+
     badge: {
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 999,
-      border: "1px solid rgba(44,89,255,0.28)",
-      color: "#2f6bff",
-      background: "rgba(24,58,179,0.18)",
+      border: "1px solid rgba(103,232,249,0.18)",
+      color: "#67e8f9",
+      background: "rgba(18, 36, 85, 0.34)",
       padding: "10px 18px",
       fontSize: 13,
       fontWeight: 700,
       letterSpacing: "0.14em",
       textTransform: "uppercase",
+      boxShadow: "0 8px 22px rgba(0,0,0,0.20)",
     },
+
     sectionTitle: {
       margin: "0 0 14px",
       fontSize: 16,
       fontWeight: 800,
-      color: "#cbd5e1",
+      color: "#d7def7",
       letterSpacing: "0.1em",
       textTransform: "uppercase",
     },
+
     bottomNav: {
       position: "fixed",
       bottom: 20,
@@ -1257,22 +1284,23 @@ function App() {
       transform: "translateX(-50%)",
       width: "calc(100% - 32px)",
       maxWidth: 448,
-      background: "rgba(14,20,36,0.95)",
-      border: "1px solid rgba(148,163,184,0.14)",
+      background: "rgba(11, 16, 30, 0.88)",
+      border: "1px solid rgba(129,140,248,0.12)",
       borderRadius: 26,
       display: "grid",
       gridTemplateColumns: "repeat(4, 1fr)",
       padding: 12,
-      boxShadow: "0 20px 50px rgba(0,0,0,0.45)",
+      boxShadow: "0 20px 50px rgba(0,0,0,0.50)",
       zIndex: 5,
-      backdropFilter: "blur(10px)",
+      backdropFilter: "blur(14px)",
     },
+
     navItem: (active) => ({
       minHeight: 58,
       borderRadius: 18,
       border: "none",
-      background: active ? "rgba(29,78,216,0.15)" : "transparent",
-      color: active ? "#2563ff" : "#94a3b8",
+      background: active ? "rgba(29,78,216,0.18)" : "transparent",
+      color: active ? "#67e8f9" : "#94a3b8",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -1282,6 +1310,7 @@ function App() {
       fontWeight: 700,
       cursor: "pointer",
       textTransform: "uppercase",
+      boxShadow: active ? "inset 0 0 18px rgba(103,232,249,0.06)" : "none",
     }),
   }
 
@@ -1293,6 +1322,21 @@ function App() {
         </button>
         <div style={{ fontSize: 17, fontWeight: 800 }}>{title}</div>
         <button style={styles.iconBtn}>{right}</button>
+      </div>
+    )
+  }
+
+  function MessageBox({ text }) {
+    return (
+      <div
+        style={{
+          ...styles.glassCard,
+          marginTop: 18,
+          color: "#dbeafe",
+          borderColor: "rgba(59,130,246,0.3)",
+        }}
+      >
+        {text}
       </div>
     )
   }
@@ -1315,21 +1359,6 @@ function App() {
     )
   }
 
-  function MessageBox({ text }) {
-    return (
-      <div
-        style={{
-          ...styles.glassCard,
-          marginTop: 18,
-          color: "#dbeafe",
-          borderColor: "rgba(59,130,246,0.3)",
-        }}
-      >
-        {text}
-      </div>
-    )
-  }
-
   function WinnerButton({ icon: Icon, label, onClick, danger = false }) {
     return (
       <button
@@ -1343,7 +1372,7 @@ function App() {
           alignItems: "center",
           gap: 12,
           cursor: "pointer",
-          color: danger ? "#ff6464" : "#f8fafc",
+          color: danger ? "#ff79c8" : "#f8fafc",
         }}
       >
         <Icon size={30} />
@@ -1365,24 +1394,14 @@ function App() {
         </div>
 
         <div style={{ textAlign: "center", padding: "14px 12px 26px" }}>
-          <div style={{ ...styles.sectionTitle, color: "#2f6bff" }}>
-            Le village se réveille
-          </div>
+          <div style={styles.labelUpper}>Le village se réveille</div>
           <h1 style={{ ...styles.headingXL, marginTop: 18, marginBottom: 24 }}>
             Loup-
             <br />
             Garou
           </h1>
-          <p
-            style={{
-              ...styles.subtitle,
-              fontSize: 18,
-              maxWidth: 340,
-              margin: "0 auto",
-            }}
-          >
-            Ne fais confiance à personne. La nuit tombe sur le village, et la
-            chasse commence.
+          <p style={{ ...styles.subtitle, fontSize: 18, maxWidth: 340, margin: "0 auto" }}>
+            Ne fais confiance à personne. La nuit tombe sur le village, et la chasse commence.
           </p>
         </div>
 
@@ -1406,7 +1425,7 @@ function App() {
                 width: 56,
                 height: 56,
                 borderRadius: 16,
-                background: "linear-gradient(180deg,#1f4dff,#1b3fc8)",
+                background: "linear-gradient(180deg,#2563eb,#7c3aed)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1416,14 +1435,10 @@ function App() {
               <Sparkles size={26} />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
-                Maître du jeu
-              </div>
-              <div style={{ color: "#94a3b8", fontSize: 16 }}>
-                Contrôle l’histoire et les rôles
-              </div>
+              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>Maître du jeu</div>
+              <div style={{ color: "#b8c3e0", fontSize: 16 }}>Contrôle l’histoire et les rôles</div>
             </div>
-            <ChevronRight size={28} color="#64748b" />
+            <ChevronRight size={28} color="#8fa4d6" />
           </button>
 
           <button
@@ -1445,7 +1460,7 @@ function App() {
                 width: 56,
                 height: 56,
                 borderRadius: 16,
-                background: "rgba(30,41,59,0.8)",
+                background: "rgba(17, 24, 39, 0.72)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1457,11 +1472,9 @@ function App() {
               <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
                 Entrer comme joueur
               </div>
-              <div style={{ color: "#94a3b8", fontSize: 16 }}>
-                Ta survie dépend de ton intuition
-              </div>
+              <div style={{ color: "#b8c3e0", fontSize: 16 }}>Ta survie dépend de ton intuition</div>
             </div>
-            <ChevronRight size={28} color="#64748b" />
+            <ChevronRight size={28} color="#8fa4d6" />
           </button>
         </div>
 
@@ -1483,20 +1496,12 @@ function App() {
   function HostEntryScreen() {
     return (
       <div style={styles.screen}>
-        <HeaderBar
-          title="Créer comme maître du jeu"
-          onBack={goToHome}
-          right={<Settings size={20} />}
-        />
+        <HeaderBar title="Créer comme maître du jeu" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
           <div>
-            <div style={{ ...styles.sectionTitle, color: "#2f6bff" }}>
-              Maître du jeu
-            </div>
-            <h2 style={{ ...styles.headingXL, fontSize: 42, marginTop: 14 }}>
-              Créer le salon
-            </h2>
+            <div style={styles.labelUpper}>Maître du jeu</div>
+            <h2 style={{ ...styles.headingXL, fontSize: 42, marginTop: 14 }}>Créer le salon</h2>
           </div>
 
           <div style={styles.glassCard}>
@@ -1515,9 +1520,7 @@ function App() {
                 max="44"
                 value={expectedPlayers}
                 onChange={(e) =>
-                  setExpectedPlayers(
-                    Math.min(44, Math.max(4, Number(e.target.value) || 4))
-                  )
+                  setExpectedPlayers(Math.min(44, Math.max(4, Number(e.target.value) || 4)))
                 }
                 style={styles.field}
               />
@@ -1537,17 +1540,11 @@ function App() {
   function PlayerEntryScreen() {
     return (
       <div style={styles.screen}>
-        <HeaderBar
-          title="Entrer comme joueur"
-          onBack={goToHome}
-          right={<Settings size={20} />}
-        />
+        <HeaderBar title="Entrer comme joueur" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
           <div>
-            <div style={{ ...styles.sectionTitle, color: "#2f6bff" }}>
-              Entre dans la partie
-            </div>
+            <div style={styles.labelUpper}>Entre dans la partie</div>
             <h2 style={{ ...styles.headingXL, fontSize: 42, marginTop: 14 }}>
               Rejoindre un salon
             </h2>
@@ -1567,11 +1564,7 @@ function App() {
                 placeholder="Code de la partie"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                style={{
-                  ...styles.field,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                }}
+                style={{ ...styles.field, letterSpacing: "0.18em", textTransform: "uppercase" }}
               />
               <button onClick={joinGameAsPlayer} style={styles.primaryBtn}>
                 <Users size={18} /> Rejoindre la partie
@@ -1588,11 +1581,7 @@ function App() {
   function HostLobbyScreen() {
     return (
       <div style={styles.screen}>
-        <HeaderBar
-          title="Salon Loup-Garou"
-          onBack={goToHome}
-          right={<Settings size={20} />}
-        />
+        <HeaderBar title="Salon Loup-Garou" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ textAlign: "center", paddingTop: 12, paddingBottom: 22 }}>
           <div style={{ fontSize: 62, fontWeight: 900, letterSpacing: "0.08em" }}>
@@ -1605,9 +1594,7 @@ function App() {
 
         <div style={{ display: "grid", gap: 18 }}>
           <div style={styles.glassCard}>
-            <div style={{ color: "#cbd5e1", fontSize: 15, marginBottom: 10 }}>
-              Joueurs connectés
-            </div>
+            <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 10 }}>Joueurs connectés</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <div style={{ fontSize: 54, fontWeight: 800 }}>
                 {players.length}/{expectedPlayers}
@@ -1638,7 +1625,7 @@ function App() {
           </div>
 
           <div style={styles.glassCard}>
-            <div style={{ color: "#cbd5e1", fontSize: 15, marginBottom: 12 }}>
+            <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 12 }}>
               Nombre total de joueurs (4–44)
             </div>
             <input
@@ -1647,9 +1634,7 @@ function App() {
               max="44"
               value={expectedPlayers}
               onChange={(e) =>
-                setExpectedPlayers(
-                  Math.min(44, Math.max(4, Number(e.target.value) || 4))
-                )
+                setExpectedPlayers(Math.min(44, Math.max(4, Number(e.target.value) || 4)))
               }
               style={styles.field}
             />
@@ -1663,13 +1648,10 @@ function App() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: 10,
-                flexWrap: "wrap",
               }}
             >
-              <div style={{ fontSize: 18, fontWeight: 800 }}>
-                Configuration des rôles
-              </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <div style={{ fontSize: 18, fontWeight: 800 }}>Configuration des rôles</div>
+              <div style={{ display: "flex", gap: 10 }}>
                 <button
                   onClick={() => {
                     const suggested = generateSuggestedRoles(expectedPlayers)
@@ -1697,7 +1679,9 @@ function App() {
                 .filter(
                   (roleKey) =>
                     roleConfig[roleKey] > 0 ||
-                    ["loup", "voyante", "sorciere", "garde", "chasseur", "villageois"].includes(roleKey)
+                    ["loup", "voyante", "sorciere", "garde", "chasseur", "villageois"].includes(
+                      roleKey
+                    )
                 )
                 .map((roleKey) => {
                   const accent = getRoleAccent(roleKey)
@@ -1731,10 +1715,8 @@ function App() {
                           {ROLE_LABELS[roleKey].slice(0, 1)}
                         </div>
                         <div>
-                          <div style={{ fontSize: 16, fontWeight: 800 }}>
-                            {ROLE_LABELS[roleKey]}
-                          </div>
-                          <div style={{ color: "#7c8aa6", fontSize: 13 }}>
+                          <div style={{ fontSize: 16, fontWeight: 800 }}>{ROLE_LABELS[roleKey]}</div>
+                          <div style={{ color: "#b8c3e0", fontSize: 13 }}>
                             {WOLF_ROLES.includes(roleKey) ? "Camp des loups" : "Village"}
                           </div>
                         </div>
@@ -1770,7 +1752,7 @@ function App() {
                             ...styles.iconBtn,
                             width: 40,
                             height: 40,
-                            background: "linear-gradient(180deg, #1f4dff, #1741d0)",
+                            background: "linear-gradient(180deg, #2563eb, #7c3aed)",
                             border: "none",
                             opacity:
                               roleConfig[roleKey] >= getRoleMaxCount(roleKey) ? 0.45 : 1,
@@ -1788,7 +1770,7 @@ function App() {
               style={{
                 padding: 20,
                 borderTop: "1px solid rgba(148,163,184,0.1)",
-                color: "#2f6bff",
+                color: "#67e8f9",
                 fontWeight: 700,
                 display: "flex",
                 alignItems: "center",
@@ -1802,36 +1784,34 @@ function App() {
           <div>
             <div style={styles.sectionTitle}>Joueurs dans le salon</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {[{ name: currentGame.host_name, host: true }, ...players].map(
-                (player, index) => (
-                  <div
-                    key={`${player.name}-${index}`}
+              {[{ name: currentGame.host_name, host: true }, ...players].map((player, index) => (
+                <div
+                  key={`${player.name}-${index}`}
+                  style={{
+                    borderRadius: 999,
+                    border: "1px solid rgba(59,130,246,0.32)",
+                    padding: "10px 14px",
+                    background: "rgba(15,23,42,0.6)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                  }}
+                >
+                  <span
                     style={{
+                      width: 9,
+                      height: 9,
                       borderRadius: 999,
-                      border: "1px solid rgba(59,130,246,0.32)",
-                      padding: "10px 14px",
-                      background: "rgba(15,23,42,0.6)",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 8,
+                      background: "#22c55e",
+                      display: "inline-block",
                     }}
-                  >
-                    <span
-                      style={{
-                        width: 9,
-                        height: 9,
-                        borderRadius: 999,
-                        background: "#22c55e",
-                        display: "inline-block",
-                      }}
-                    />
-                    <span>
-                      {player.name}
-                      {player.host ? " (Hôte)" : ""}
-                    </span>
-                  </div>
-                )
-              )}
+                  />
+                  <span>
+                    {player.name}
+                    {player.host ? " (Hôte)" : ""}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -1880,9 +1860,7 @@ function App() {
           </button>
           <div>
             <div style={{ fontSize: 17, fontWeight: 800 }}>Loup-Garou</div>
-            <div style={{ color: "#2f6bff", fontWeight: 700 }}>
-              SALON : {currentGame.code}
-            </div>
+            <div style={{ color: "#67e8f9", fontWeight: 700 }}>SALON : {currentGame.code}</div>
           </div>
           <div style={styles.badge}>{chipLabel}</div>
         </div>
@@ -1895,7 +1873,7 @@ function App() {
                   width: 74,
                   height: 74,
                   borderRadius: 20,
-                  background: "linear-gradient(180deg,#1f4dff,#1741d0)",
+                  background: "linear-gradient(180deg,#2563eb,#7c3aed)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1908,7 +1886,7 @@ function App() {
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 6 }}>
                   {getPhaseHeadline(currentGame.phase)}
                 </div>
-                <div style={{ color: "#97a3b6", fontSize: 16, lineHeight: 1.55 }}>
+                <div style={{ color: "#b8c3e0", fontSize: 16, lineHeight: 1.55 }}>
                   {getPhaseSubtext(currentGame.phase)}
                 </div>
               </div>
@@ -1921,17 +1899,9 @@ function App() {
             ) : null}
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 10,
-              flexWrap: "wrap",
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={styles.sectionTitle}>Joueurs ({players.length})</div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 8 }}>
               {["all", "alive", "dead"].map((filterValue) => (
                 <button
                   key={filterValue}
@@ -2000,14 +1970,7 @@ function App() {
                       />
                     </div>
                     <div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          flexWrap: "wrap",
-                        }}
-                      >
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                         <span
                           style={{
                             fontSize: 18,
@@ -2035,7 +1998,7 @@ function App() {
                       <div
                         style={{
                           marginTop: 4,
-                          color: player.alive ? "#94a3b8" : "#ef4444",
+                          color: player.alive ? "#b8c3e0" : "#ef4444",
                           fontSize: 16,
                         }}
                       >
@@ -2052,9 +2015,7 @@ function App() {
                         height: 56,
                         borderRadius: 16,
                         border: `1px solid ${
-                          player.alive
-                            ? "rgba(239,68,68,0.32)"
-                            : "rgba(34,197,94,0.32)"
+                          player.alive ? "rgba(239,68,68,0.32)" : "rgba(34,197,94,0.32)"
                         }`,
                         background: player.alive
                           ? "rgba(239,68,68,0.08)"
@@ -2077,22 +2038,14 @@ function App() {
           <div>
             <div style={styles.sectionTitle}>Fin manuelle de partie</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <WinnerButton
-                icon={Home}
-                label="Village"
-                onClick={() => endGameManually("Le village gagne")}
-              />
+              <WinnerButton icon={Home} label="Village" onClick={() => endGameManually("Le village gagne")} />
               <WinnerButton
                 icon={Users}
                 label="Loups"
                 onClick={() => endGameManually("Les loups gagnent")}
                 danger
               />
-              <WinnerButton
-                icon={Heart}
-                label="Amoureux"
-                onClick={() => endGameManually("Les amoureux gagnent")}
-              />
+              <WinnerButton icon={Heart} label="Amoureux" onClick={() => endGameManually("Les amoureux gagnent")} />
               <WinnerButton
                 icon={Flame}
                 label="Pyromane"
@@ -2107,11 +2060,9 @@ function App() {
             </div>
           ) : null}
 
-          <div style={{ display: "grid", gap: 14 }}>
-            <button onClick={newGame} style={styles.primaryBtn}>
-              Nouvelle partie
-            </button>
-          </div>
+          <button onClick={newGame} style={{ ...styles.secondaryBtn, width: "100%", minHeight: 58 }}>
+            Nouvelle partie
+          </button>
 
           {message ? <MessageBox text={message} /> : null}
         </div>
@@ -2119,24 +2070,9 @@ function App() {
         <BottomNav
           items={[
             { key: "game", label: "Jeu", icon: Moon, active: activeHostTab === "game" },
-            {
-              key: "roles",
-              label: "Rôles",
-              icon: Shield,
-              active: activeHostTab === "roles",
-            },
-            {
-              key: "log",
-              label: "Journal",
-              icon: RotateCcw,
-              active: activeHostTab === "log",
-            },
-            {
-              key: "setup",
-              label: "Réglages",
-              icon: Settings,
-              active: activeHostTab === "setup",
-            },
+            { key: "roles", label: "Rôles", icon: Shield, active: activeHostTab === "roles" },
+            { key: "log", label: "Journal", icon: RotateCcw, active: activeHostTab === "log" },
+            { key: "setup", label: "Réglages", icon: Settings, active: activeHostTab === "setup" },
           ]}
           onPress={setActiveHostTab}
         />
@@ -2154,8 +2090,8 @@ function App() {
           <div style={{ fontSize: 58, fontWeight: 900, letterSpacing: "0.06em", marginTop: 20 }}>
             {currentGame.code}
           </div>
-          <div style={{ marginTop: 10, color: "#94a3b8", fontSize: 18 }}>
-            Hôte : <span style={{ color: "#2f6bff" }}>{currentGame.host_name}</span>
+          <div style={{ marginTop: 10, color: "#b8c3e0", fontSize: 18 }}>
+            Hôte : <span style={{ color: "#67e8f9" }}>{currentGame.host_name}</span>
           </div>
         </div>
 
@@ -2171,7 +2107,7 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#2f6bff",
+                color: "#67e8f9",
               }}
             >
               <RotateCcw size={32} />
@@ -2179,7 +2115,7 @@ function App() {
             <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.4 }}>
               En attente du début de la partie...
             </div>
-            <div style={{ color: "#94a3b8", fontSize: 18, lineHeight: 1.6, marginTop: 12 }}>
+            <div style={{ color: "#b8c3e0", fontSize: 18, lineHeight: 1.6, marginTop: 12 }}>
               Le maître du jeu va bientôt lancer la session. Prépare-toi pour la chasse.
             </div>
           </div>
@@ -2224,7 +2160,7 @@ function App() {
                       <div style={{ fontSize: 17, fontWeight: 800 }}>{player.name}</div>
                       <div
                         style={{
-                          color: player.subtitle ? "#2563ff" : "#94a3b8",
+                          color: player.subtitle ? "#67e8f9" : "#b8c3e0",
                           fontSize: 14,
                         }}
                       >
@@ -2246,6 +2182,20 @@ function App() {
             )}
           </div>
 
+          {isRealHost ? (
+            <button onClick={startGame} style={styles.primaryBtn}>
+              <Play size={18} /> LANCER LA PARTIE
+            </button>
+          ) : (
+            <button style={styles.primaryBtn} disabled>
+              En attente du maître du jeu
+            </button>
+          )}
+
+          <button style={{ ...styles.secondaryBtn, width: "100%", minHeight: 58 }}>
+            Inviter des amis
+          </button>
+
           {message ? <MessageBox text={message} /> : null}
         </div>
       </div>
@@ -2254,7 +2204,7 @@ function App() {
 
   function PlayerGameScreen() {
     const roleAccent = getRoleAccent(me?.role)
-    const phaseDisplay =
+    const phaseLabel =
       currentGame.phase === "night"
         ? `NUIT ${currentGame.night_number || 1}`
         : currentGame.phase === "day"
@@ -2265,15 +2215,8 @@ function App() {
       <div style={styles.screen}>
         <div style={{ ...styles.topBar, justifyContent: "center", position: "relative" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 800 }}>{phaseDisplay}</div>
-            <div
-              style={{
-                color: "#2f6bff",
-                fontSize: 16,
-                fontWeight: 700,
-                marginTop: 4,
-              }}
-            >
+            <div style={{ fontSize: 18, fontWeight: 800 }}>{phaseLabel}</div>
+            <div style={{ color: "#67e8f9", fontSize: 16, fontWeight: 700, marginTop: 4 }}>
               {getPhaseLabel(currentGame.phase).toUpperCase()}
             </div>
           </div>
@@ -2287,7 +2230,7 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#2563ff",
+                color: "#67e8f9",
               }}
             >
               <Moon size={24} />
@@ -2297,9 +2240,7 @@ function App() {
 
         <div style={{ paddingTop: 26 }}>
           <div style={{ textAlign: "center", marginBottom: 22 }}>
-            <div style={{ ...styles.sectionTitle, marginBottom: 10 }}>
-              Identité secrète
-            </div>
+            <div style={{ ...styles.sectionTitle, marginBottom: 10 }}>Identité secrète</div>
             <h2 style={{ ...styles.headingXL, fontSize: 32, margin: 0 }}>Ton rôle</h2>
           </div>
 
@@ -2309,7 +2250,7 @@ function App() {
                 borderRadius: 24,
                 minHeight: 320,
                 background:
-                  "linear-gradient(180deg, rgba(16,49,143,0.45), rgba(10,21,54,0.5))",
+                  "linear-gradient(180deg, rgba(22,48,122,0.42), rgba(86,25,132,0.20), rgba(8,16,40,0.58))",
                 border: "1px solid rgba(59,130,246,0.18)",
                 display: "flex",
                 alignItems: "center",
@@ -2333,9 +2274,7 @@ function App() {
             </div>
 
             <div style={{ textAlign: "center", marginTop: 24 }}>
-              <div style={{ ...styles.sectionTitle, color: roleAccent.text }}>
-                Ton camp
-              </div>
+              <div style={{ ...styles.labelUpper, color: roleAccent.text }}>Ton camp</div>
               <div style={{ fontSize: 30, fontWeight: 800, marginTop: 14 }}>
                 {ROLE_LABELS[me?.role] || "Rôle inconnu"}
               </div>
@@ -2343,13 +2282,12 @@ function App() {
                 style={{
                   width: 70,
                   height: 2,
-                  background: "rgba(37,99,235,0.6)",
+                  background: "rgba(103,232,249,0.6)",
                   margin: "18px auto 24px",
                 }}
               />
               <p style={{ ...styles.subtitle, fontSize: 18 }}>
-                {ROLE_DESCRIPTIONS[me?.role] ||
-                  "Ton destin sera bientôt révélé."}
+                {ROLE_DESCRIPTIONS[me?.role] || "Ton destin sera bientôt révélé."}
               </p>
             </div>
 
@@ -2357,18 +2295,12 @@ function App() {
               style={{
                 marginTop: 24,
                 borderRadius: 18,
-                background: "rgba(11,20,43,0.7)",
+                background: "rgba(10, 18, 38, 0.72)",
                 border: "1px solid rgba(59,130,246,0.16)",
                 padding: 18,
               }}
             >
-              <div
-                style={{
-                  ...styles.sectionTitle,
-                  marginBottom: 10,
-                  color: "#2f6bff",
-                }}
-              >
+              <div style={{ ...styles.sectionTitle, marginBottom: 10, color: "#67e8f9" }}>
                 Ton objectif
               </div>
               <div style={{ color: "#dbeafe", lineHeight: 1.7 }}>
@@ -2383,13 +2315,7 @@ function App() {
 
           <div style={{ ...styles.glassCard, marginTop: 18 }}>
             <div style={{ fontSize: 18, fontWeight: 800 }}>Statut</div>
-            <div
-              style={{
-                marginTop: 8,
-                color: me?.alive ? "#4ade80" : "#f87171",
-                fontWeight: 700,
-              }}
-            >
+            <div style={{ marginTop: 8, color: me?.alive ? "#4ade80" : "#f87171", fontWeight: 700 }}>
               Tu es actuellement {me?.alive ? "vivant" : "mort"}
             </div>
             {currentGame.status === "ended" ? (
@@ -2404,23 +2330,18 @@ function App() {
 
         <BottomNav
           items={[
+            { key: "profil", label: "Profil", icon: User, active: activePlayerTab === "profil" },
             {
-              key: "profile",
-              label: "Profil",
-              icon: User,
-              active: activePlayerTab === "profile",
-            },
-            {
-              key: "history",
+              key: "historique",
               label: "Historique",
               icon: Shield,
-              active: activePlayerTab === "history",
+              active: activePlayerTab === "historique",
             },
             {
-              key: "graveyard",
+              key: "cimetiere",
               label: "Cimetière",
               icon: Skull,
-              active: activePlayerTab === "graveyard",
+              active: activePlayerTab === "cimetiere",
             },
           ]}
           onPress={setActivePlayerTab}
