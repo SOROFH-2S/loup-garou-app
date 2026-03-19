@@ -183,14 +183,189 @@ const FILTER_LABELS = {
 }
 
 const COLORS = {
-  primaryBlue: "#2563eb",
-  primaryBlueLight: "#38bdf8",
-  titleBlue: "#0ea5e9",
-  darkText: "#020617",
-  darkTextSoft: "#0f172a",
-  bodyText: "#111827",
+  primaryBlue: "#38bdf8",
+  primaryBlueLight: "#67e8f9",
+  titleBlue: "#7dd3fc",
+  darkText: "#dbeafe",
+  darkTextSoft: "#cbd5e1",
+  bodyText: "#e2e8f0",
   lightText: "#dbeafe",
   mutedText: "#94a3b8",
+}
+
+function GlobalAnimations() {
+  return (
+    <style>{`
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body, #root {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        background: #04070f;
+      }
+
+      button, input {
+        font: inherit;
+      }
+
+      button {
+        transition:
+          transform 180ms ease,
+          box-shadow 220ms ease,
+          background 220ms ease,
+          border-color 220ms ease,
+          opacity 180ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      button:active {
+        transform: translateY(1px) scale(0.985);
+      }
+
+      input {
+        transition:
+          box-shadow 220ms ease,
+          border-color 220ms ease,
+          background 220ms ease;
+      }
+
+      input:focus {
+        border-color: rgba(103, 232, 249, 0.48) !important;
+        box-shadow:
+          0 0 0 1px rgba(103, 232, 249, 0.22),
+          0 0 18px rgba(56, 189, 248, 0.12),
+          inset 0 1px 0 rgba(255,255,255,0.04);
+        background: rgba(255,255,255,0.06) !important;
+      }
+
+      @keyframes neonPulse {
+        0%, 100% {
+          box-shadow:
+            0 0 0 rgba(56,189,248,0),
+            0 0 18px rgba(56,189,248,0.08),
+            0 0 36px rgba(217,70,239,0.06);
+        }
+        50% {
+          box-shadow:
+            0 0 12px rgba(56,189,248,0.16),
+            0 0 26px rgba(56,189,248,0.18),
+            0 0 44px rgba(217,70,239,0.14);
+        }
+      }
+
+      @keyframes neonBorderFlow {
+        0% {
+          border-color: rgba(103,232,249,0.18);
+        }
+        50% {
+          border-color: rgba(217,70,239,0.24);
+        }
+        100% {
+          border-color: rgba(103,232,249,0.18);
+        }
+      }
+
+      @keyframes titleGlow {
+        0%, 100% {
+          text-shadow:
+            0 0 10px rgba(56,189,248,0.28),
+            0 0 26px rgba(56,189,248,0.18),
+            0 0 46px rgba(217,70,239,0.10);
+        }
+        50% {
+          text-shadow:
+            0 0 14px rgba(56,189,248,0.40),
+            0 0 34px rgba(56,189,248,0.28),
+            0 0 62px rgba(217,70,239,0.18);
+        }
+      }
+
+      @keyframes floatMoon {
+        0%, 100% {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        50% {
+          transform: translate3d(0, -10px, 0) scale(1.02);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -220% 0;
+        }
+        100% {
+          background-position: 220% 0;
+        }
+      }
+
+      @keyframes badgePulse {
+        0%, 100% {
+          box-shadow:
+            0 0 0 rgba(103,232,249,0),
+            0 0 12px rgba(103,232,249,0.10);
+        }
+        50% {
+          box-shadow:
+            0 0 12px rgba(103,232,249,0.18),
+            0 0 28px rgba(103,232,249,0.16);
+        }
+      }
+
+      @keyframes ambientFog {
+        0%, 100% {
+          opacity: 0.94;
+          filter: saturate(1.05) contrast(1.02) brightness(1);
+        }
+        50% {
+          opacity: 1;
+          filter: saturate(1.12) contrast(1.06) brightness(1.03);
+        }
+      }
+
+      @keyframes roleCardGlow {
+        0%, 100% {
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.03),
+            0 0 0 rgba(56,189,248,0),
+            0 12px 30px rgba(0,0,0,0.28);
+        }
+        50% {
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.03),
+            0 0 18px rgba(56,189,248,0.08),
+            0 12px 30px rgba(0,0,0,0.30);
+        }
+      }
+
+      @keyframes iconOrb {
+        0%, 100% {
+          box-shadow:
+            0 0 14px rgba(56,189,248,0.10),
+            0 0 26px rgba(217,70,239,0.06);
+        }
+        50% {
+          box-shadow:
+            0 0 18px rgba(56,189,248,0.18),
+            0 0 36px rgba(217,70,239,0.14);
+        }
+      }
+
+      .scroll-hidden::-webkit-scrollbar {
+        display: none;
+      }
+
+      .scroll-hidden {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    `}</style>
+  )
 }
 
 function App() {
@@ -1098,7 +1273,7 @@ function App() {
       return {
         bg: "rgba(210, 66, 255, 0.14)",
         border: "rgba(210, 66, 255, 0.32)",
-        text: "#d946ef",
+        text: "#e879f9",
       }
     }
 
@@ -1149,7 +1324,7 @@ function App() {
       position: "fixed",
       inset: 0,
       backgroundImage: `
-        linear-gradient(rgba(4,6,16,0.40), rgba(4,6,16,0.72)),
+        linear-gradient(rgba(4,6,16,0.42), rgba(4,6,16,0.76)),
         radial-gradient(circle at 50% 22%, rgba(110,255,241,0.22), rgba(0,0,0,0) 24%),
         radial-gradient(circle at 52% 62%, rgba(236,72,153,0.16), rgba(0,0,0,0) 22%),
         url(${wolfMoon})
@@ -1160,6 +1335,8 @@ function App() {
       opacity: 1,
       pointerEvents: "none",
       filter: "saturate(1.08) contrast(1.02)",
+      animation: "ambientFog 7s ease-in-out infinite, floatMoon 10s ease-in-out infinite",
+      transformOrigin: "center center",
     },
 
     mobile: {
@@ -1173,7 +1350,8 @@ function App() {
       borderRight: "1px solid rgba(217,70,239,0.08)",
       background:
         "linear-gradient(180deg, rgba(5,8,22,0.22), rgba(5,8,20,0.34), rgba(4,7,15,0.48))",
-      boxShadow: "0 30px 80px rgba(0,0,0,0.55)",
+      boxShadow:
+        "0 30px 80px rgba(0,0,0,0.55), 0 0 42px rgba(56,189,248,0.08), 0 0 62px rgba(217,70,239,0.06)",
       backdropFilter: "blur(4px)",
     },
 
@@ -1199,6 +1377,7 @@ function App() {
       justifyContent: "center",
       cursor: "pointer",
       boxShadow: "0 8px 24px rgba(0,0,0,0.22)",
+      animation: "iconOrb 2.8s ease-in-out infinite, neonBorderFlow 4s ease-in-out infinite",
     },
 
     screen: {
@@ -1211,7 +1390,9 @@ function App() {
       margin: "0 0 16px",
       fontWeight: 800,
       letterSpacing: "-0.04em",
+      color: "#e0f2fe",
       textShadow: "0 0 24px rgba(88,240,255,0.08)",
+      animation: "titleGlow 3.2s ease-in-out infinite",
     },
 
     subtitle: {
@@ -1227,6 +1408,7 @@ function App() {
       color: "#67e8f9",
       textTransform: "uppercase",
       fontWeight: 700,
+      textShadow: "0 0 10px rgba(103,232,249,0.28)",
     },
 
     glassCard: {
@@ -1236,8 +1418,9 @@ function App() {
       borderRadius: 24,
       padding: 20,
       boxShadow:
-        "0 18px 40px rgba(0,0,0,0.40), inset 0 1px 0 rgba(103,232,249,0.05)",
+        "0 18px 40px rgba(0,0,0,0.40), inset 0 1px 0 rgba(103,232,249,0.05), 0 0 18px rgba(56,189,248,0.06), 0 0 28px rgba(217,70,239,0.05)",
       backdropFilter: "blur(10px)",
+      animation: "neonPulse 4s ease-in-out infinite, neonBorderFlow 5s ease-in-out infinite",
     },
 
     softCard: {
@@ -1247,6 +1430,7 @@ function App() {
       borderRadius: 20,
       padding: 18,
       boxShadow: "0 10px 30px rgba(0,0,0,0.28)",
+      animation: "roleCardGlow 4.5s ease-in-out infinite",
     },
 
     primaryBtn: {
@@ -1255,7 +1439,8 @@ function App() {
       borderRadius: 18,
       border: "1px solid rgba(103,232,249,0.18)",
       background:
-        "linear-gradient(180deg, #1d4ed8 0%, #2563eb 45%, #6d28d9 100%)",
+        "linear-gradient(90deg, #1d4ed8 0%, #2563eb 35%, #7c3aed 70%, #38bdf8 100%)",
+      backgroundSize: "200% 100%",
       color: "white",
       fontSize: 17,
       fontWeight: 800,
@@ -1265,8 +1450,9 @@ function App() {
       justifyContent: "center",
       gap: 10,
       boxShadow:
-        "0 14px 30px rgba(37,99,235,0.32), 0 0 24px rgba(217,70,239,0.12)",
+        "0 14px 30px rgba(37,99,235,0.32), 0 0 24px rgba(217,70,239,0.16), 0 0 18px rgba(56,189,248,0.16)",
       cursor: "pointer",
+      animation: "shimmer 5s linear infinite, neonPulse 2.8s ease-in-out infinite",
     },
 
     secondaryBtn: {
@@ -1282,7 +1468,8 @@ function App() {
       gap: 8,
       cursor: "pointer",
       padding: "0 16px",
-      boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.18), 0 0 16px rgba(56,189,248,0.05)",
+      animation: "neonBorderFlow 5s ease-in-out infinite",
     },
 
     field: {
@@ -1313,6 +1500,7 @@ function App() {
       letterSpacing: "0.14em",
       textTransform: "uppercase",
       boxShadow: "0 8px 22px rgba(0,0,0,0.20)",
+      animation: "badgePulse 2.6s ease-in-out infinite, neonBorderFlow 4s ease-in-out infinite",
     },
 
     sectionTitle: {
@@ -1322,6 +1510,7 @@ function App() {
       color: "#d7def7",
       letterSpacing: "0.1em",
       textTransform: "uppercase",
+      textShadow: "0 0 12px rgba(103,232,249,0.08)",
     },
 
     bottomNav: {
@@ -1337,9 +1526,11 @@ function App() {
       display: "grid",
       gridTemplateColumns: "repeat(4, 1fr)",
       padding: 12,
-      boxShadow: "0 20px 50px rgba(0,0,0,0.50)",
+      boxShadow:
+        "0 20px 50px rgba(0,0,0,0.50), 0 0 26px rgba(56,189,248,0.06), 0 0 34px rgba(217,70,239,0.05)",
       zIndex: 5,
       backdropFilter: "blur(14px)",
+      animation: "neonPulse 4.8s ease-in-out infinite",
     },
 
     navItem: (active) => ({
@@ -1357,7 +1548,7 @@ function App() {
       fontWeight: 700,
       cursor: "pointer",
       textTransform: "uppercase",
-      boxShadow: active ? "inset 0 0 18px rgba(103,232,249,0.06)" : "none",
+      boxShadow: active ? "inset 0 0 18px rgba(103,232,249,0.10), 0 0 18px rgba(103,232,249,0.06)" : "none",
     }),
   }
 
@@ -1367,7 +1558,9 @@ function App() {
         <button onClick={onBack} style={styles.iconBtn}>
           <ArrowLeft size={20} />
         </button>
-        <div style={{ fontSize: 17, fontWeight: 800 }}>{title}</div>
+        <div style={{ fontSize: 17, fontWeight: 800, textShadow: "0 0 12px rgba(103,232,249,0.12)" }}>
+          {title}
+        </div>
         <button style={styles.iconBtn}>{right}</button>
       </div>
     )
@@ -1381,6 +1574,7 @@ function App() {
           marginTop: 18,
           color: "#dbeafe",
           borderColor: "rgba(59,130,246,0.3)",
+          animation: "neonPulse 2.4s ease-in-out infinite, neonBorderFlow 3.8s ease-in-out infinite",
         }}
       >
         {text}
@@ -1420,6 +1614,10 @@ function App() {
           gap: 12,
           cursor: "pointer",
           color: danger ? "#ff79c8" : "#f8fafc",
+          border: `1px solid ${danger ? "rgba(255,121,200,0.26)" : "rgba(103,232,249,0.16)"}`,
+          boxShadow: danger
+            ? "0 10px 30px rgba(0,0,0,0.28), 0 0 20px rgba(255,121,200,0.10)"
+            : "0 10px 30px rgba(0,0,0,0.28), 0 0 20px rgba(56,189,248,0.08)",
         }}
       >
         <Icon size={30} />
@@ -1516,8 +1714,9 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 10px 24px rgba(29,78,216,0.35)",
+                boxShadow: "0 10px 24px rgba(29,78,216,0.35), 0 0 18px rgba(103,232,249,0.16)",
                 color: "#fff",
+                animation: "iconOrb 2.6s ease-in-out infinite",
               }}
             >
               <Sparkles size={26} />
@@ -1530,6 +1729,7 @@ function App() {
                   fontWeight: 800,
                   marginBottom: 6,
                   color: COLORS.primaryBlue,
+                  textShadow: "0 0 14px rgba(56,189,248,0.18)",
                 }}
               >
                 Maître du jeu
@@ -1573,6 +1773,8 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#fff",
+                boxShadow: "0 0 18px rgba(103,232,249,0.08)",
+                animation: "iconOrb 2.6s ease-in-out infinite",
               }}
             >
               <Users size={26} />
@@ -1585,6 +1787,7 @@ function App() {
                   fontWeight: 800,
                   marginBottom: 6,
                   color: COLORS.primaryBlue,
+                  textShadow: "0 0 14px rgba(56,189,248,0.18)",
                 }}
               >
                 Entrer comme joueur
@@ -1704,7 +1907,15 @@ function App() {
         <HeaderBar title="Salon Loup-Garou" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ textAlign: "center", paddingTop: 12, paddingBottom: 22 }}>
-          <div style={{ fontSize: 62, fontWeight: 900, letterSpacing: "0.08em", color: COLORS.titleBlue }}>
+          <div
+            style={{
+              fontSize: 62,
+              fontWeight: 900,
+              letterSpacing: "0.08em",
+              color: COLORS.titleBlue,
+              animation: "titleGlow 2.8s ease-in-out infinite",
+            }}
+          >
             {currentGame.code}
           </div>
           <div style={{ ...styles.sectionTitle, marginTop: 10, marginBottom: 0 }}>
@@ -1716,7 +1927,7 @@ function App() {
           <div style={styles.glassCard}>
             <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 10 }}>Joueurs connectés</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ fontSize: 54, fontWeight: 800 }}>
+              <div style={{ fontSize: 54, fontWeight: 800, textShadow: "0 0 16px rgba(103,232,249,0.10)" }}>
                 {players.length}/{expectedPlayers}
               </div>
               <div style={{ display: "flex", marginLeft: 6 }}>
@@ -1735,6 +1946,8 @@ function App() {
                       marginLeft: index === 0 ? 0 : -8,
                       fontSize: 12,
                       fontWeight: 800,
+                      boxShadow: "0 0 16px rgba(56,189,248,0.12)",
+                      animation: "iconOrb 2.8s ease-in-out infinite",
                     }}
                   >
                     {player.name.slice(0, 2).toUpperCase()}
@@ -1759,10 +1972,11 @@ function App() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: 10,
+                flexWrap: "wrap",
               }}
             >
               <div style={{ fontSize: 18, fontWeight: 800 }}>Configuration des rôles</div>
-              <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <button
                   onClick={() => {
                     const suggested = generateSuggestedRoles(expectedPlayers)
@@ -1821,6 +2035,8 @@ function App() {
                             justifyContent: "center",
                             color: accent.text,
                             fontWeight: 900,
+                            boxShadow: `0 0 16px ${accent.border}`,
+                            animation: "iconOrb 2.4s ease-in-out infinite",
                           }}
                         >
                           {ROLE_LABELS[roleKey].slice(0, 1)}
@@ -1852,6 +2068,7 @@ function App() {
                             textAlign: "center",
                             fontSize: 24,
                             fontWeight: 800,
+                            textShadow: "0 0 12px rgba(103,232,249,0.10)",
                           }}
                         >
                           {roleConfig[roleKey]}
@@ -1886,6 +2103,7 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
+                textShadow: "0 0 12px rgba(103,232,249,0.18)",
               }}
             >
               <UserPlus size={18} /> Ajouter des rôles
@@ -1906,6 +2124,8 @@ function App() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 8,
+                    boxShadow: "0 0 14px rgba(56,189,248,0.06)",
+                    animation: "neonBorderFlow 4.5s ease-in-out infinite",
                   }}
                 >
                   <span
@@ -1915,6 +2135,7 @@ function App() {
                       borderRadius: 999,
                       background: "#22c55e",
                       display: "inline-block",
+                      boxShadow: "0 0 10px rgba(34,197,94,0.6)",
                     }}
                   />
                   <span>
@@ -1943,6 +2164,10 @@ function App() {
               textAlign: "center",
               color: totalConfiguredRoles === expectedPlayers ? "#22c55e" : "#f59e0b",
               fontWeight: 700,
+              textShadow:
+                totalConfiguredRoles === expectedPlayers
+                  ? "0 0 12px rgba(34,197,94,0.25)"
+                  : "0 0 12px rgba(245,158,11,0.18)",
             }}
           >
             Rôles configurés : {totalConfiguredRoles} / {expectedPlayers}
@@ -1971,7 +2196,9 @@ function App() {
           </button>
           <div>
             <div style={{ fontSize: 17, fontWeight: 800 }}>Loup-Garou</div>
-            <div style={{ color: "#67e8f9", fontWeight: 700 }}>SALON : {currentGame.code}</div>
+            <div style={{ color: "#67e8f9", fontWeight: 700, textShadow: "0 0 12px rgba(103,232,249,0.16)" }}>
+              SALON : {currentGame.code}
+            </div>
           </div>
           <div style={styles.badge}>{chipLabel}</div>
         </div>
@@ -1988,8 +2215,9 @@ function App() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 14px 30px rgba(29,78,216,0.28)",
+                  boxShadow: "0 14px 30px rgba(29,78,216,0.28), 0 0 24px rgba(103,232,249,0.16)",
                   color: "#fff",
+                  animation: "iconOrb 2.6s ease-in-out infinite",
                 }}
               >
                 <Moon size={34} />
@@ -2011,7 +2239,7 @@ function App() {
             ) : null}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
             <div style={styles.sectionTitle}>Joueurs ({players.length})</div>
             <div style={{ display: "flex", gap: 8 }}>
               {["all", "alive", "dead"].map((filterValue) => (
@@ -2064,6 +2292,9 @@ function App() {
                           justifyContent: "center",
                           fontSize: 22,
                           fontWeight: 900,
+                          boxShadow: player.alive
+                            ? "0 0 18px rgba(103,232,249,0.18)"
+                            : "0 0 10px rgba(148,163,184,0.08)",
                         }}
                       >
                         {player.name.slice(0, 1).toUpperCase()}
@@ -2078,6 +2309,9 @@ function App() {
                           borderRadius: 16,
                           background: player.alive ? "#22c55e" : "#6b7280",
                           border: "2px solid #0b1220",
+                          boxShadow: player.alive
+                            ? "0 0 10px rgba(34,197,94,0.6)"
+                            : "none",
                         }}
                       />
                     </div>
@@ -2102,6 +2336,7 @@ function App() {
                             fontSize: 12,
                             fontWeight: 800,
                             border: `1px solid ${accent.border}`,
+                            boxShadow: `0 0 14px ${accent.border}`,
                           }}
                         >
                           {ROLE_LABELS[player.role] || "Inconnu"}
@@ -2137,6 +2372,10 @@ function App() {
                         alignItems: "center",
                         justifyContent: "center",
                         cursor: "pointer",
+                        boxShadow: player.alive
+                          ? "0 0 16px rgba(239,68,68,0.12)"
+                          : "0 0 16px rgba(34,197,94,0.12)",
+                        animation: "neonBorderFlow 4s ease-in-out infinite",
                       }}
                     >
                       {player.alive ? <UserMinus size={24} /> : <UserPlus size={24} />}
@@ -2167,7 +2406,14 @@ function App() {
           </div>
 
           {ended ? (
-            <div style={{ ...styles.glassCard, color: "#fca5a5", fontWeight: 800 }}>
+            <div
+              style={{
+                ...styles.glassCard,
+                color: "#fca5a5",
+                fontWeight: 800,
+                textShadow: "0 0 12px rgba(252,165,165,0.16)",
+              }}
+            >
               Partie terminée{currentGame.winner ? ` — ${currentGame.winner}` : ""}
             </div>
           ) : null}
@@ -2199,11 +2445,20 @@ function App() {
 
         <div style={{ textAlign: "center", paddingTop: 8 }}>
           <div style={styles.badge}>Salon de jeu</div>
-          <div style={{ fontSize: 58, fontWeight: 900, letterSpacing: "0.06em", marginTop: 20, color: COLORS.titleBlue }}>
+          <div
+            style={{
+              fontSize: 58,
+              fontWeight: 900,
+              letterSpacing: "0.06em",
+              marginTop: 20,
+              color: COLORS.titleBlue,
+              animation: "titleGlow 3s ease-in-out infinite",
+            }}
+          >
             {currentGame.code}
           </div>
           <div style={{ marginTop: 10, color: "#b8c3e0", fontSize: 18 }}>
-            Hôte : <span style={{ color: "#67e8f9" }}>{currentGame.host_name}</span>
+            Hôte : <span style={{ color: "#67e8f9", textShadow: "0 0 12px rgba(103,232,249,0.16)" }}>{currentGame.host_name}</span>
           </div>
         </div>
 
@@ -2220,6 +2475,8 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#67e8f9",
+                boxShadow: "0 0 24px rgba(56,189,248,0.12)",
+                animation: "iconOrb 2.6s ease-in-out infinite",
               }}
             >
               <RotateCcw size={32} />
@@ -2264,6 +2521,8 @@ function App() {
                         alignItems: "center",
                         justifyContent: "center",
                         color: "#93c5fd",
+                        boxShadow: "0 0 14px rgba(103,232,249,0.10)",
+                        animation: "iconOrb 2.8s ease-in-out infinite",
                       }}
                     >
                       <User size={20} />
@@ -2287,6 +2546,7 @@ function App() {
                       borderRadius: 999,
                       background: "#22c55e",
                       display: "inline-block",
+                      boxShadow: "0 0 10px rgba(34,197,94,0.6)",
                     }}
                   />
                 </div>
@@ -2299,7 +2559,7 @@ function App() {
               <Play size={18} /> LANCER LA PARTIE
             </button>
           ) : (
-            <button style={styles.primaryBtn} disabled>
+            <button style={{ ...styles.primaryBtn, opacity: 0.6 }} disabled>
               En attente du maître du jeu
             </button>
           )}
@@ -2328,7 +2588,7 @@ function App() {
         <div style={{ ...styles.topBar, justifyContent: "center", position: "relative" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 18, fontWeight: 800 }}>{phaseLabel}</div>
-            <div style={{ color: "#67e8f9", fontSize: 16, fontWeight: 700, marginTop: 4 }}>
+            <div style={{ color: "#67e8f9", fontSize: 16, fontWeight: 700, marginTop: 4, textShadow: "0 0 12px rgba(103,232,249,0.16)" }}>
               {getPhaseLabel(currentGame.phase).toUpperCase()}
             </div>
           </div>
@@ -2343,6 +2603,8 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#67e8f9",
+                boxShadow: "0 0 18px rgba(103,232,249,0.12)",
+                animation: "iconOrb 2.6s ease-in-out infinite",
               }}
             >
               <Moon size={24} />
@@ -2370,6 +2632,8 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 140,
+                boxShadow: "inset 0 0 30px rgba(56,189,248,0.06), 0 0 24px rgba(56,189,248,0.08)",
+                animation: "neonPulse 3.4s ease-in-out infinite, neonBorderFlow 4.8s ease-in-out infinite",
               }}
             >
               {me?.role
@@ -2389,7 +2653,15 @@ function App() {
 
             <div style={{ textAlign: "center", marginTop: 24 }}>
               <div style={{ ...styles.labelUpper, color: roleAccent.text }}>Ton camp</div>
-              <div style={{ fontSize: 30, fontWeight: 800, marginTop: 14, color: COLORS.titleBlue }}>
+              <div
+                style={{
+                  fontSize: 30,
+                  fontWeight: 800,
+                  marginTop: 14,
+                  color: COLORS.titleBlue,
+                  textShadow: `0 0 18px ${roleAccent.border}`,
+                }}
+              >
                 {ROLE_LABELS[me?.role] || "Rôle inconnu"}
               </div>
               <div
@@ -2398,6 +2670,7 @@ function App() {
                   height: 2,
                   background: "rgba(103,232,249,0.6)",
                   margin: "18px auto 24px",
+                  boxShadow: "0 0 12px rgba(103,232,249,0.5)",
                 }}
               />
               <p style={{ ...styles.subtitle, fontSize: 18, color: COLORS.darkText }}>
@@ -2412,6 +2685,8 @@ function App() {
                 background: "rgba(10, 18, 38, 0.72)",
                 border: "1px solid rgba(59,130,246,0.16)",
                 padding: 18,
+                boxShadow: "0 0 18px rgba(56,189,248,0.06)",
+                animation: "neonBorderFlow 5s ease-in-out infinite",
               }}
             >
               <div style={{ ...styles.sectionTitle, marginBottom: 10, color: "#67e8f9" }}>
@@ -2484,6 +2759,7 @@ function App() {
 
   return (
     <div style={styles.page}>
+      <GlobalAnimations />
       <div style={styles.forestGlow} />
       <div style={styles.mobile}>{renderScreen()}</div>
     </div>
