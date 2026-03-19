@@ -1952,17 +1952,17 @@ function App() {
           </button>
         </div>
 
-        {message ? <MessageBox text={message} /> : null}
+        {message ? MessageBox({ text: message }) : null}
 
-        <BottomNav
-          items={[
+        {BottomNav({
+          items: [
             { key: "home", label: "Accueil", icon: Home, active: true },
             { key: "recent", label: "Récent", icon: RotateCcw },
             { key: "profile", label: "Profil", icon: User },
             { key: "trophy", label: "Victoires", icon: Trophy },
-          ]}
-          onPress={() => {}}
-        />
+          ],
+          onPress: () => {},
+        })}
       </div>
     )
   }
@@ -1970,7 +1970,11 @@ function App() {
   function HostEntryScreen() {
     return (
       <div style={styles.screen} className="screen-enter">
-        <HeaderBar title="Créer comme maître du jeu" onBack={goToHome} right={<Settings size={20} />} />
+        {HeaderBar({
+          title: "Créer comme maître du jeu",
+          onBack: goToHome,
+          right: <Settings size={20} />,
+        })}
 
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
           <div>
@@ -1990,7 +1994,7 @@ function App() {
                 style={styles.field}
               />
 
-              <PlayersNumberInput />
+              {PlayersNumberInput()}
 
               <button onClick={createGameAsHost} style={styles.primaryBtn}>
                 <Sparkles size={18} /> Créer la partie
@@ -1998,7 +2002,7 @@ function App() {
             </div>
           </div>
 
-          {message ? <MessageBox text={message} /> : null}
+          {message ? MessageBox({ text: message }) : null}
         </div>
       </div>
     )
@@ -2007,7 +2011,11 @@ function App() {
   function PlayerEntryScreen() {
     return (
       <div style={styles.screen} className="screen-enter">
-        <HeaderBar title="Entrer comme joueur" onBack={goToHome} right={<Settings size={20} />} />
+        {HeaderBar({
+          title: "Entrer comme joueur",
+          onBack: goToHome,
+          right: <Settings size={20} />,
+        })}
 
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
           <div>
@@ -2039,7 +2047,7 @@ function App() {
             </div>
           </div>
 
-          {message ? <MessageBox text={message} /> : null}
+          {message ? MessageBox({ text: message }) : null}
         </div>
       </div>
     )
@@ -2048,7 +2056,11 @@ function App() {
   function HostLobbyScreen() {
     return (
       <div style={styles.screen} className="screen-enter">
-        <HeaderBar title="Salon Loup-Garou" onBack={goToHome} right={<Settings size={20} />} />
+        {HeaderBar({
+          title: "Salon Loup-Garou",
+          onBack: goToHome,
+          right: <Settings size={20} />,
+        })}
 
         <div style={{ textAlign: "center", paddingTop: 12, paddingBottom: 22 }}>
           <div
@@ -2105,7 +2117,7 @@ function App() {
             <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 12 }}>
               Nombre total de joueurs (4–44)
             </div>
-            <PlayersNumberInput />
+            {PlayersNumberInput()}
           </div>
 
           <div style={{ ...styles.glassCard, padding: 0, overflow: "hidden" }} className="floating-card">
@@ -2320,7 +2332,7 @@ function App() {
             Rôles configurés : {totalConfiguredRoles} / {expectedPlayers}
           </div>
 
-          {message ? <MessageBox text={message} /> : null}
+          {message ? MessageBox({ text: message }) : null}
         </div>
       </div>
     )
@@ -2538,19 +2550,27 @@ function App() {
           <div>
             <div style={styles.sectionTitle}>Fin manuelle de partie</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <WinnerButton icon={Home} label="Village" onClick={() => endGameManually("Le village gagne")} />
-              <WinnerButton
-                icon={Users}
-                label="Loups"
-                onClick={() => endGameManually("Les loups gagnent")}
-                danger
-              />
-              <WinnerButton icon={Heart} label="Amoureux" onClick={() => endGameManually("Les amoureux gagnent")} />
-              <WinnerButton
-                icon={Flame}
-                label="Pyromane"
-                onClick={() => endGameManually("Le pyromane gagne")}
-              />
+              {WinnerButton({
+                icon: Home,
+                label: "Village",
+                onClick: () => endGameManually("Le village gagne"),
+              })}
+              {WinnerButton({
+                icon: Users,
+                label: "Loups",
+                onClick: () => endGameManually("Les loups gagnent"),
+                danger: true,
+              })}
+              {WinnerButton({
+                icon: Heart,
+                label: "Amoureux",
+                onClick: () => endGameManually("Les amoureux gagnent"),
+              })}
+              {WinnerButton({
+                icon: Flame,
+                label: "Pyromane",
+                onClick: () => endGameManually("Le pyromane gagne"),
+              })}
             </div>
           </div>
 
@@ -2571,18 +2591,18 @@ function App() {
             Nouvelle partie
           </button>
 
-          {message ? <MessageBox text={message} /> : null}
+          {message ? MessageBox({ text: message }) : null}
         </div>
 
-        <BottomNav
-          items={[
+        {BottomNav({
+          items: [
             { key: "game", label: "Jeu", icon: Moon, active: activeHostTab === "game" },
             { key: "roles", label: "Rôles", icon: Shield, active: activeHostTab === "roles" },
             { key: "log", label: "Journal", icon: RotateCcw, active: activeHostTab === "log" },
             { key: "setup", label: "Réglages", icon: Settings, active: activeHostTab === "setup" },
-          ]}
-          onPress={setActiveHostTab}
-        />
+          ],
+          onPress: setActiveHostTab,
+        })}
       </div>
     )
   }
@@ -2590,7 +2610,11 @@ function App() {
   function PlayerLobbyScreen() {
     return (
       <div style={styles.screen} className="screen-enter">
-        <HeaderBar title="Loup-Garou" onBack={goToHome} right={<Settings size={20} />} />
+        {HeaderBar({
+          title: "Loup-Garou",
+          onBack: goToHome,
+          right: <Settings size={20} />,
+        })}
 
         <div style={{ textAlign: "center", paddingTop: 8 }}>
           <div style={styles.badge}>Salon de jeu</div>
@@ -2719,7 +2743,7 @@ function App() {
             Inviter des amis
           </button>
 
-          {message ? <MessageBox text={message} /> : null}
+          {message ? MessageBox({ text: message }) : null}
         </div>
       </div>
     )
@@ -2865,11 +2889,11 @@ function App() {
             ) : null}
           </div>
 
-          {message ? <MessageBox text={message} /> : null}
+          {message ? MessageBox({ text: message }) : null}
         </div>
 
-        <BottomNav
-          items={[
+        {BottomNav({
+          items: [
             { key: "profil", label: "Profil", icon: User, active: activePlayerTab === "profil" },
             {
               key: "historique",
@@ -2883,29 +2907,29 @@ function App() {
               icon: Skull,
               active: activePlayerTab === "cimetiere",
             },
-          ]}
-          onPress={setActivePlayerTab}
-          columns={3}
-        />
+          ],
+          onPress: setActivePlayerTab,
+          columns: 3,
+        })}
       </div>
     )
   }
 
   function renderScreen() {
     if (!currentGame) {
-      if (entryMode === "host") return <HostEntryScreen />
-      if (entryMode === "player") return <PlayerEntryScreen />
-      return <HomeScreen />
+      if (entryMode === "host") return HostEntryScreen()
+      if (entryMode === "player") return PlayerEntryScreen()
+      return HomeScreen()
     }
 
     const isLobby = currentGame.status === "lobby"
     const isStarted = currentGame.status === "started"
     const isEnded = currentGame.status === "ended"
 
-    if (isRealHost && isLobby) return <HostLobbyScreen />
-    if (isRealHost && (isStarted || isEnded)) return <HostGameScreen />
-    if (isLobby) return <PlayerLobbyScreen />
-    return <PlayerGameScreen />
+    if (isRealHost && isLobby) return HostLobbyScreen()
+    if (isRealHost && (isStarted || isEnded)) return HostGameScreen()
+    if (isLobby) return PlayerLobbyScreen()
+    return PlayerGameScreen()
   }
 
   return (
