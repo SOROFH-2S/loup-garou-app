@@ -196,10 +196,7 @@ const COLORS = {
 function GlobalAnimations() {
   return (
     <style>{`
-      * {
-        box-sizing: border-box;
-      }
-
+      * { box-sizing: border-box; }
       html, body, #root {
         margin: 0;
         padding: 0;
@@ -207,9 +204,7 @@ function GlobalAnimations() {
         background: #04070f;
       }
 
-      button, input {
-        font: inherit;
-      }
+      button, input { font: inherit; }
 
       button {
         transition:
@@ -221,13 +216,8 @@ function GlobalAnimations() {
           filter 220ms ease;
       }
 
-      button:hover {
-        transform: translateY(-1px);
-      }
-
-      button:active {
-        transform: translateY(1px) scale(0.985);
-      }
+      button:hover { transform: translateY(-1px); }
+      button:active { transform: translateY(1px) scale(0.985); }
 
       input {
         transition:
@@ -261,15 +251,9 @@ function GlobalAnimations() {
       }
 
       @keyframes neonBorderFlow {
-        0% {
-          border-color: rgba(103,232,249,0.18);
-        }
-        50% {
-          border-color: rgba(217,70,239,0.24);
-        }
-        100% {
-          border-color: rgba(103,232,249,0.18);
-        }
+        0% { border-color: rgba(103,232,249,0.18); }
+        50% { border-color: rgba(217,70,239,0.24); }
+        100% { border-color: rgba(103,232,249,0.18); }
       }
 
       @keyframes titleGlow {
@@ -288,21 +272,13 @@ function GlobalAnimations() {
       }
 
       @keyframes floatMoon {
-        0%, 100% {
-          transform: translate3d(0, 0, 0) scale(1);
-        }
-        50% {
-          transform: translate3d(0, -10px, 0) scale(1.02);
-        }
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(0, -10px, 0) scale(1.02); }
       }
 
       @keyframes shimmer {
-        0% {
-          background-position: -220% 0;
-        }
-        100% {
-          background-position: 220% 0;
-        }
+        0% { background-position: -220% 0; }
+        100% { background-position: 220% 0; }
       }
 
       @keyframes badgePulse {
@@ -371,12 +347,8 @@ function GlobalAnimations() {
       }
 
       @keyframes cardFloat {
-        0%, 100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-6px);
-        }
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-6px); }
       }
 
       @keyframes playersReveal {
@@ -391,12 +363,8 @@ function GlobalAnimations() {
       }
 
       @keyframes cinematicOverlay {
-        0%, 100% {
-          opacity: 0.48;
-        }
-        50% {
-          opacity: 0.62;
-        }
+        0%, 100% { opacity: 0.48; }
+        50% { opacity: 0.62; }
       }
 
       @keyframes moonSweep {
@@ -411,21 +379,13 @@ function GlobalAnimations() {
       }
 
       @keyframes dayGlow {
-        0%, 100% {
-          opacity: 0.18;
-        }
-        50% {
-          opacity: 0.30;
-        }
+        0%, 100% { opacity: 0.18; }
+        50% { opacity: 0.30; }
       }
 
       @keyframes nightGlow {
-        0%, 100% {
-          opacity: 0.20;
-        }
-        50% {
-          opacity: 0.36;
-        }
+        0%, 100% { opacity: 0.20; }
+        50% { opacity: 0.36; }
       }
 
       .screen-enter {
@@ -444,10 +404,7 @@ function GlobalAnimations() {
         animation: playersReveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
       }
 
-      .scroll-hidden::-webkit-scrollbar {
-        display: none;
-      }
-
+      .scroll-hidden::-webkit-scrollbar { display: none; }
       .scroll-hidden {
         -ms-overflow-style: none;
         scrollbar-width: none;
@@ -467,6 +424,7 @@ function App() {
   const [mySessionId, setMySessionId] = useState("")
   const [expectedPlayers, setExpectedPlayers] = useState(10)
   const [expectedPlayersInput, setExpectedPlayersInput] = useState("10")
+  const [showHiddenRoles, setShowHiddenRoles] = useState(false)
   const [roleConfig, setRoleConfig] = useState({
     ...EMPTY_ROLE_CONFIG,
     loup: 2,
@@ -550,6 +508,7 @@ function App() {
     setMySessionId("")
     setExpectedPlayers(10)
     setExpectedPlayersInput("10")
+    setShowHiddenRoles(false)
     setActiveHostTab("game")
     setActivePlayerTab("profil")
     setPlayerFilter("all")
@@ -905,6 +864,7 @@ function App() {
       ...EMPTY_ROLE_CONFIG,
       ...(game.role_config || {}),
     })
+    setShowHiddenRoles(false)
     setMessage("Partie créée avec succès")
     await loadPlayers(game.id)
   }
@@ -1790,6 +1750,107 @@ function App() {
     )
   }
 
+  function RoleConfigRow(roleKey, compactAddOnly = false) {
+    const accent = getRoleAccent(roleKey)
+
+    return (
+      <div
+        key={roleKey}
+        style={{
+          padding: "18px 20px",
+          borderTop: "1px solid rgba(148,163,184,0.1)",
+          display: "grid",
+          gridTemplateColumns: "1fr auto",
+          alignItems: "center",
+          gap: 16,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              background: accent.bg,
+              border: `1px solid ${accent.border}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: accent.text,
+              fontWeight: 900,
+              boxShadow: `0 0 16px ${accent.border}`,
+              animation: "iconOrb 2.4s ease-in-out infinite",
+            }}
+          >
+            {ROLE_LABELS[roleKey].slice(0, 1)}
+          </div>
+          <div>
+            <div style={{ fontSize: 16, fontWeight: 800 }}>{ROLE_LABELS[roleKey]}</div>
+            <div style={{ color: "#b8c3e0", fontSize: 13 }}>
+              {WOLF_ROLES.includes(roleKey) ? "Camp des loups" : "Village"}
+            </div>
+          </div>
+        </div>
+
+        {compactAddOnly ? (
+          <button
+            onClick={() => changeRoleCount(roleKey, 1)}
+            style={{
+              ...styles.iconBtn,
+              width: 40,
+              height: 40,
+              background: "linear-gradient(180deg, #2563eb, #7c3aed)",
+              border: "none",
+            }}
+          >
+            +
+          </button>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button
+              onClick={() => changeRoleCount(roleKey, -1)}
+              disabled={roleConfig[roleKey] <= 0}
+              style={{
+                ...styles.iconBtn,
+                width: 40,
+                height: 40,
+                opacity: roleConfig[roleKey] <= 0 ? 0.4 : 1,
+              }}
+            >
+              −
+            </button>
+            <div
+              style={{
+                width: 24,
+                textAlign: "center",
+                fontSize: 24,
+                fontWeight: 800,
+                textShadow: "0 0 12px rgba(103,232,249,0.10)",
+              }}
+            >
+              {roleConfig[roleKey]}
+            </div>
+            <button
+              onClick={() => changeRoleCount(roleKey, 1)}
+              disabled={roleConfig[roleKey] >= getRoleMaxCount(roleKey)}
+              style={{
+                ...styles.iconBtn,
+                width: 40,
+                height: 40,
+                background: "linear-gradient(180deg, #2563eb, #7c3aed)",
+                border: "none",
+                opacity:
+                  roleConfig[roleKey] >= getRoleMaxCount(roleKey) ? 0.45 : 1,
+              }}
+            >
+              +
+            </button>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   function HomeScreen() {
     return (
       <div style={styles.screen} className="screen-enter">
@@ -2054,6 +2115,16 @@ function App() {
   }
 
   function HostLobbyScreen() {
+    const defaultVisibleRoles = ["loup", "voyante", "sorciere", "garde", "chasseur", "villageois"]
+
+    const visibleRoles = Object.keys(roleConfig).filter(
+      (roleKey) => roleConfig[roleKey] > 0 || defaultVisibleRoles.includes(roleKey)
+    )
+
+    const hiddenRoles = Object.keys(roleConfig).filter(
+      (roleKey) => !visibleRoles.includes(roleKey)
+    )
+
     return (
       <div style={styles.screen} className="screen-enter">
         {HeaderBar({
@@ -2137,6 +2208,7 @@ function App() {
                   onClick={() => {
                     const suggested = generateSuggestedRoles(expectedPlayers)
                     setRoleConfig(suggested)
+                    setShowHiddenRoles(false)
                     setMessage("Composition intelligente générée")
                   }}
                   style={styles.secondaryBtn}
@@ -2156,113 +2228,56 @@ function App() {
             </div>
 
             <div>
-              {Object.keys(roleConfig)
-                .filter(
-                  (roleKey) =>
-                    roleConfig[roleKey] > 0 ||
-                    ["loup", "voyante", "sorciere", "garde", "chasseur", "villageois"].includes(
-                      roleKey
-                    )
-                )
-                .map((roleKey) => {
-                  const accent = getRoleAccent(roleKey)
-                  return (
+              {visibleRoles.map((roleKey) => RoleConfigRow(roleKey, false))}
+
+              <button
+                type="button"
+                onClick={() => setShowHiddenRoles((prev) => !prev)}
+                style={{
+                  width: "100%",
+                  padding: "20px",
+                  borderTop: "1px solid rgba(148,163,184,0.1)",
+                  borderLeft: "none",
+                  borderRight: "none",
+                  borderBottom: "none",
+                  background: "transparent",
+                  color: "#67e8f9",
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  textShadow: "0 0 12px rgba(103,232,249,0.18)",
+                  cursor: "pointer",
+                  fontSize: 16,
+                }}
+              >
+                <UserPlus size={18} />
+                {showHiddenRoles ? "Masquer les rôles supplémentaires" : "Ajouter des rôles"}
+              </button>
+
+              {showHiddenRoles ? (
+                <div
+                  className="player-reveal"
+                  style={{
+                    borderTop: "1px solid rgba(148,163,184,0.1)",
+                    background: "rgba(255,255,255,0.02)",
+                  }}
+                >
+                  {hiddenRoles.map((roleKey) => RoleConfigRow(roleKey, true))}
+
+                  {hiddenRoles.length === 0 ? (
                     <div
-                      key={roleKey}
                       style={{
                         padding: "18px 20px",
-                        borderTop: "1px solid rgba(148,163,184,0.1)",
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto",
-                        alignItems: "center",
-                        gap: 16,
+                        color: "#94a3b8",
+                        fontSize: 14,
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                        <div
-                          style={{
-                            width: 44,
-                            height: 44,
-                            borderRadius: 14,
-                            background: accent.bg,
-                            border: `1px solid ${accent.border}`,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: accent.text,
-                            fontWeight: 900,
-                            boxShadow: `0 0 16px ${accent.border}`,
-                            animation: "iconOrb 2.4s ease-in-out infinite",
-                          }}
-                        >
-                          {ROLE_LABELS[roleKey].slice(0, 1)}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 16, fontWeight: 800 }}>{ROLE_LABELS[roleKey]}</div>
-                          <div style={{ color: "#b8c3e0", fontSize: 13 }}>
-                            {WOLF_ROLES.includes(roleKey) ? "Camp des loups" : "Village"}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <button
-                          onClick={() => changeRoleCount(roleKey, -1)}
-                          disabled={roleConfig[roleKey] <= 0}
-                          style={{
-                            ...styles.iconBtn,
-                            width: 40,
-                            height: 40,
-                            opacity: roleConfig[roleKey] <= 0 ? 0.4 : 1,
-                          }}
-                        >
-                          −
-                        </button>
-                        <div
-                          style={{
-                            width: 24,
-                            textAlign: "center",
-                            fontSize: 24,
-                            fontWeight: 800,
-                            textShadow: "0 0 12px rgba(103,232,249,0.10)",
-                          }}
-                        >
-                          {roleConfig[roleKey]}
-                        </div>
-                        <button
-                          onClick={() => changeRoleCount(roleKey, 1)}
-                          disabled={roleConfig[roleKey] >= getRoleMaxCount(roleKey)}
-                          style={{
-                            ...styles.iconBtn,
-                            width: 40,
-                            height: 40,
-                            background: "linear-gradient(180deg, #2563eb, #7c3aed)",
-                            border: "none",
-                            opacity:
-                              roleConfig[roleKey] >= getRoleMaxCount(roleKey) ? 0.45 : 1,
-                          }}
-                        >
-                          +
-                        </button>
-                      </div>
+                      Tous les rôles sont déjà affichés.
                     </div>
-                  )
-                })}
-            </div>
-
-            <div
-              style={{
-                padding: 20,
-                borderTop: "1px solid rgba(148,163,184,0.1)",
-                color: "#67e8f9",
-                fontWeight: 700,
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                textShadow: "0 0 12px rgba(103,232,249,0.18)",
-              }}
-            >
-              <UserPlus size={18} /> Ajouter des rôles
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -2895,18 +2910,8 @@ function App() {
         {BottomNav({
           items: [
             { key: "profil", label: "Profil", icon: User, active: activePlayerTab === "profil" },
-            {
-              key: "historique",
-              label: "Historique",
-              icon: Shield,
-              active: activePlayerTab === "historique",
-            },
-            {
-              key: "cimetiere",
-              label: "Cimetière",
-              icon: Skull,
-              active: activePlayerTab === "cimetiere",
-            },
+            { key: "historique", label: "Historique", icon: Shield, active: activePlayerTab === "historique" },
+            { key: "cimetiere", label: "Cimetière", icon: Skull, active: activePlayerTab === "cimetiere" },
           ],
           onPress: setActivePlayerTab,
           columns: 3,
