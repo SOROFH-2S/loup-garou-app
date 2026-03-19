@@ -192,6 +192,7 @@ function App() {
   const [players, setPlayers] = useState([])
   const [mySessionId, setMySessionId] = useState("")
   const [expectedPlayers, setExpectedPlayers] = useState(10)
+  const [expectedPlayersInput, setExpectedPlayersInput] = useState("10")
   const [roleConfig, setRoleConfig] = useState({
     ...EMPTY_ROLE_CONFIG,
     loup: 2,
@@ -220,6 +221,22 @@ function App() {
 
   function normalizeName(name) {
     return name.trim().toLowerCase()
+  }
+
+  function validateExpectedPlayersInput(rawValue, fallbackValue = expectedPlayers) {
+    const parsed = Number(rawValue)
+
+    if (Number.isNaN(parsed)) {
+      return fallbackValue
+    }
+
+    return Math.min(44, Math.max(4, parsed))
+  }
+
+  function commitExpectedPlayersInput() {
+    const validated = validateExpectedPlayersInput(expectedPlayersInput)
+    setExpectedPlayers(validated)
+    setExpectedPlayersInput(String(validated))
   }
 
   function persistGameSession({
@@ -262,6 +279,7 @@ function App() {
     setPlayers([])
     setMySessionId("")
     setExpectedPlayers(10)
+    setExpectedPlayersInput("10")
     setActiveHostTab("game")
     setActivePlayerTab("profil")
     setPlayerFilter("all")
@@ -521,17 +539,21 @@ function App() {
   async function createGameAsHost() {
     setMessage("")
 
+    const validatedPlayers = validateExpectedPlayersInput(expectedPlayersInput, expectedPlayers)
+    setExpectedPlayers(validatedPlayers)
+    setExpectedPlayersInput(String(validatedPlayers))
+
     if (!hostName.trim()) {
       setMessage("Entre le nom du maître du jeu")
       return
     }
 
-    if (expectedPlayers < 4) {
+    if (validatedPlayers < 4) {
       setMessage("Le nombre minimum de joueurs est 4")
       return
     }
 
-    if (expectedPlayers > 44) {
+    if (validatedPlayers > 44) {
       setMessage("Le nombre maximum de joueurs est 44")
       return
     }
@@ -550,7 +572,7 @@ function App() {
           host_name: hostName.trim(),
           host_session_id: sessionId,
           status: "lobby",
-          expected_players: expectedPlayers,
+          expected_players: validatedPlayers,
           role_config: roleConfig,
           phase: "lobby",
           night_number: 0,
@@ -576,6 +598,7 @@ function App() {
 
     setCurrentGame(game)
     setExpectedPlayers(game.expected_players || 10)
+    setExpectedPlayersInput(String(game.expected_players || 10))
     setRoleConfig({
       ...EMPTY_ROLE_CONFIG,
       ...(game.role_config || {}),
@@ -649,6 +672,7 @@ function App() {
       setEntryMode("player")
       setCurrentGame(game)
       setExpectedPlayers(game.expected_players || 10)
+      setExpectedPlayersInput(String(game.expected_players || 10))
       setRoleConfig({
         ...EMPTY_ROLE_CONFIG,
         ...(game.role_config || {}),
@@ -702,6 +726,7 @@ function App() {
     setEntryMode("player")
     setCurrentGame(game)
     setExpectedPlayers(game.expected_players || 10)
+    setExpectedPlayersInput(String(game.expected_players || 10))
     setRoleConfig({
       ...EMPTY_ROLE_CONFIG,
       ...(game.role_config || {}),
@@ -713,17 +738,21 @@ function App() {
   async function saveHostConfiguration() {
     if (!currentGame) return
 
+    const validatedPlayers = validateExpectedPlayersInput(expectedPlayersInput, expectedPlayers)
+    setExpectedPlayers(validatedPlayers)
+    setExpectedPlayersInput(String(validatedPlayers))
+
     if (currentGame.host_session_id !== mySessionId) {
       setMessage("Seul le maître du jeu peut modifier la configuration")
       return
     }
 
-    if (expectedPlayers < 4 || expectedPlayers > 44) {
+    if (validatedPlayers < 4 || validatedPlayers > 44) {
       setMessage("Le nombre total de joueurs doit être compris entre 4 et 44")
       return
     }
 
-    if (totalConfiguredRoles !== expectedPlayers) {
+    if (totalConfiguredRoles !== validatedPlayers) {
       setMessage("Le total des rôles doit être égal au nombre de joueurs attendus")
       return
     }
@@ -731,7 +760,7 @@ function App() {
     const { data, error } = await supabase
       .from("games")
       .update({
-        expected_players: expectedPlayers,
+        expected_players: validatedPlayers,
         role_config: roleConfig,
       })
       .eq("id", currentGame.id)
@@ -752,12 +781,16 @@ function App() {
   async function startGame() {
     if (!currentGame) return
 
+    const validatedPlayers = validateExpectedPlayersInput(expectedPlayersInput, expectedPlayers)
+    setExpectedPlayers(validatedPlayers)
+    setExpectedPlayersInput(String(validatedPlayers))
+
     if (currentGame.host_session_id !== mySessionId) {
       setMessage("Seul le maître du jeu peut lancer la partie")
       return
     }
 
-    if (totalConfiguredRoles !== expectedPlayers) {
+    if (totalConfiguredRoles !== validatedPlayers) {
       setMessage("Le total des rôles doit être égal au nombre de joueurs attendus")
       return
     }
@@ -774,12 +807,12 @@ function App() {
       return
     }
 
-    if (!playersData || playersData.length !== currentGame.expected_players) {
+    if (!playersData || playersData.length !== validatedPlayers) {
       setMessage("Le nombre de joueurs connectés doit correspondre au nombre configuré")
       return
     }
 
-    const config = currentGame.role_config || {}
+    const config = roleConfig
     const roles = []
 
     Object.keys(config).forEach((roleKey) => {
@@ -789,7 +822,7 @@ function App() {
       }
     })
 
-    if (roles.length !== currentGame.expected_players) {
+    if (roles.length !== validatedPlayers) {
       setMessage("La composition des rôles n’est pas valide")
       return
     }
@@ -823,6 +856,8 @@ function App() {
         night_number: 0,
         day_number: 0,
         first_vote_done: false,
+        expected_players: validatedPlayers,
+        role_config: roleConfig,
       })
       .eq("id", currentGame.id)
       .eq("host_session_id", mySessionId)
@@ -955,6 +990,7 @@ function App() {
         setEntryMode("host")
         setCurrentGame(game)
         setExpectedPlayers(game.expected_players || 10)
+        setExpectedPlayersInput(String(game.expected_players || 10))
         setRoleConfig({
           ...EMPTY_ROLE_CONFIG,
           ...(game.role_config || {}),
@@ -980,6 +1016,7 @@ function App() {
         setEntryMode("player")
         setCurrentGame(game)
         setExpectedPlayers(game.expected_players || 10)
+        setExpectedPlayersInput(String(game.expected_players || 10))
         setRoleConfig({
           ...EMPTY_ROLE_CONFIG,
           ...(game.role_config || {}),
@@ -1027,7 +1064,10 @@ function App() {
 
           if (!error && data) {
             setCurrentGame(data)
-            if (data.expected_players) setExpectedPlayers(data.expected_players)
+            if (data.expected_players) {
+              setExpectedPlayers(data.expected_players)
+              setExpectedPlayersInput(String(data.expected_players))
+            }
             if (data.role_config) {
               setRoleConfig({
                 ...EMPTY_ROLE_CONFIG,
@@ -1381,6 +1421,28 @@ function App() {
     )
   }
 
+  function PlayersNumberInput() {
+    return (
+      <input
+        type="number"
+        min="4"
+        max="44"
+        inputMode="numeric"
+        value={expectedPlayersInput}
+        onChange={(e) => {
+          setExpectedPlayersInput(e.target.value)
+        }}
+        onBlur={commitExpectedPlayersInput}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.currentTarget.blur()
+          }
+        }}
+        style={styles.field}
+      />
+    )
+  }
+
   function HomeScreen() {
     return (
       <div style={styles.screen}>
@@ -1514,16 +1576,7 @@ function App() {
                 style={styles.field}
               />
 
-              <input
-                type="number"
-                min="4"
-                max="44"
-                value={expectedPlayers}
-                onChange={(e) =>
-                  setExpectedPlayers(Math.min(44, Math.max(4, Number(e.target.value) || 4)))
-                }
-                style={styles.field}
-              />
+              <PlayersNumberInput />
 
               <button onClick={createGameAsHost} style={styles.primaryBtn}>
                 <Sparkles size={18} /> Créer la partie
@@ -1628,16 +1681,7 @@ function App() {
             <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 12 }}>
               Nombre total de joueurs (4–44)
             </div>
-            <input
-              type="number"
-              min="4"
-              max="44"
-              value={expectedPlayers}
-              onChange={(e) =>
-                setExpectedPlayers(Math.min(44, Math.max(4, Number(e.target.value) || 4)))
-              }
-              style={styles.field}
-            />
+            <PlayersNumberInput />
           </div>
 
           <div style={{ ...styles.glassCard, padding: 0, overflow: "hidden" }}>
