@@ -182,6 +182,17 @@ const FILTER_LABELS = {
   dead: "morts",
 }
 
+const COLORS = {
+  primaryBlue: "#2563eb",
+  primaryBlueLight: "#38bdf8",
+  titleBlue: "#0ea5e9",
+  darkText: "#020617",
+  darkTextSoft: "#0f172a",
+  bodyText: "#111827",
+  lightText: "#dbeafe",
+  mutedText: "#94a3b8",
+}
+
 function App() {
   const [entryMode, setEntryMode] = useState("")
   const [hostName, setHostName] = useState("")
@@ -225,11 +236,7 @@ function App() {
 
   function validateExpectedPlayersInput(rawValue, fallbackValue = expectedPlayers) {
     const parsed = Number(rawValue)
-
-    if (Number.isNaN(parsed)) {
-      return fallbackValue
-    }
-
+    if (Number.isNaN(parsed)) return fallbackValue
     return Math.min(44, Math.max(4, parsed))
   }
 
@@ -1142,7 +1149,7 @@ function App() {
       position: "fixed",
       inset: 0,
       backgroundImage: `
-        linear-gradient(rgba(4,6,16,0.50), rgba(4,6,16,0.84)),
+        linear-gradient(rgba(4,6,16,0.40), rgba(4,6,16,0.72)),
         radial-gradient(circle at 50% 22%, rgba(110,255,241,0.22), rgba(0,0,0,0) 24%),
         radial-gradient(circle at 52% 62%, rgba(236,72,153,0.16), rgba(0,0,0,0) 22%),
         url(${wolfMoon})
@@ -1165,7 +1172,7 @@ function App() {
       borderLeft: "1px solid rgba(103,232,249,0.08)",
       borderRight: "1px solid rgba(217,70,239,0.08)",
       background:
-        "linear-gradient(180deg, rgba(5,8,22,0.58), rgba(5,8,20,0.76), rgba(4,7,15,0.88))",
+        "linear-gradient(180deg, rgba(5,8,22,0.22), rgba(5,8,20,0.34), rgba(4,7,15,0.48))",
       boxShadow: "0 30px 80px rgba(0,0,0,0.55)",
       backdropFilter: "blur(4px)",
     },
@@ -1208,7 +1215,7 @@ function App() {
     },
 
     subtitle: {
-      color: "#c4d0f1",
+      color: COLORS.bodyText,
       fontSize: 17,
       lineHeight: 1.65,
       margin: 0,
@@ -1457,12 +1464,30 @@ function App() {
 
         <div style={{ textAlign: "center", padding: "14px 12px 26px" }}>
           <div style={styles.labelUpper}>Le village se réveille</div>
-          <h1 style={{ ...styles.headingXL, marginTop: 18, marginBottom: 24 }}>
+
+          <h1
+            style={{
+              ...styles.headingXL,
+              marginTop: 18,
+              marginBottom: 24,
+              color: COLORS.titleBlue,
+            }}
+          >
             Loup-
             <br />
             Garou
           </h1>
-          <p style={{ ...styles.subtitle, fontSize: 18, maxWidth: 340, margin: "0 auto" }}>
+
+          <p
+            style={{
+              ...styles.subtitle,
+              fontSize: 18,
+              maxWidth: 340,
+              margin: "0 auto",
+              color: COLORS.darkText,
+              fontWeight: 500,
+            }}
+          >
             Ne fais confiance à personne. La nuit tombe sur le village, et la chasse commence.
           </p>
         </div>
@@ -1492,15 +1517,36 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 boxShadow: "0 10px 24px rgba(29,78,216,0.35)",
+                color: "#fff",
               }}
             >
               <Sparkles size={26} />
             </div>
+
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>Maître du jeu</div>
-              <div style={{ color: "#b8c3e0", fontSize: 16 }}>Contrôle l’histoire et les rôles</div>
+              <div
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  marginBottom: 6,
+                  color: COLORS.primaryBlue,
+                }}
+              >
+                Maître du jeu
+              </div>
+
+              <div
+                style={{
+                  color: COLORS.darkTextSoft,
+                  fontSize: 16,
+                  fontWeight: 500,
+                }}
+              >
+                Contrôle l’histoire et les rôles
+              </div>
             </div>
-            <ChevronRight size={28} color="#8fa4d6" />
+
+            <ChevronRight size={28} color="#c7d2fe" />
           </button>
 
           <button
@@ -1526,17 +1572,36 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                color: "#fff",
               }}
             >
               <Users size={26} />
             </div>
+
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
+              <div
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  marginBottom: 6,
+                  color: COLORS.primaryBlue,
+                }}
+              >
                 Entrer comme joueur
               </div>
-              <div style={{ color: "#b8c3e0", fontSize: 16 }}>Ta survie dépend de ton intuition</div>
+
+              <div
+                style={{
+                  color: COLORS.darkTextSoft,
+                  fontSize: 16,
+                  fontWeight: 500,
+                }}
+              >
+                Ta survie dépend de ton intuition
+              </div>
             </div>
-            <ChevronRight size={28} color="#8fa4d6" />
+
+            <ChevronRight size={28} color="#c7d2fe" />
           </button>
         </div>
 
@@ -1563,7 +1628,9 @@ function App() {
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
           <div>
             <div style={styles.labelUpper}>Maître du jeu</div>
-            <h2 style={{ ...styles.headingXL, fontSize: 42, marginTop: 14 }}>Créer le salon</h2>
+            <h2 style={{ ...styles.headingXL, fontSize: 42, marginTop: 14, color: COLORS.titleBlue }}>
+              Créer le salon
+            </h2>
           </div>
 
           <div style={styles.glassCard}>
@@ -1598,7 +1665,7 @@ function App() {
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
           <div>
             <div style={styles.labelUpper}>Entre dans la partie</div>
-            <h2 style={{ ...styles.headingXL, fontSize: 42, marginTop: 14 }}>
+            <h2 style={{ ...styles.headingXL, fontSize: 42, marginTop: 14, color: COLORS.titleBlue }}>
               Rejoindre un salon
             </h2>
           </div>
@@ -1637,7 +1704,7 @@ function App() {
         <HeaderBar title="Salon Loup-Garou" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ textAlign: "center", paddingTop: 12, paddingBottom: 22 }}>
-          <div style={{ fontSize: 62, fontWeight: 900, letterSpacing: "0.08em" }}>
+          <div style={{ fontSize: 62, fontWeight: 900, letterSpacing: "0.08em", color: COLORS.titleBlue }}>
             {currentGame.code}
           </div>
           <div style={{ ...styles.sectionTitle, marginTop: 10, marginBottom: 0 }}>
@@ -1922,6 +1989,7 @@ function App() {
                   alignItems: "center",
                   justifyContent: "center",
                   boxShadow: "0 14px 30px rgba(29,78,216,0.28)",
+                  color: "#fff",
                 }}
               >
                 <Moon size={34} />
@@ -2131,7 +2199,7 @@ function App() {
 
         <div style={{ textAlign: "center", paddingTop: 8 }}>
           <div style={styles.badge}>Salon de jeu</div>
-          <div style={{ fontSize: 58, fontWeight: 900, letterSpacing: "0.06em", marginTop: 20 }}>
+          <div style={{ fontSize: 58, fontWeight: 900, letterSpacing: "0.06em", marginTop: 20, color: COLORS.titleBlue }}>
             {currentGame.code}
           </div>
           <div style={{ marginTop: 10, color: "#b8c3e0", fontSize: 18 }}>
@@ -2285,7 +2353,9 @@ function App() {
         <div style={{ paddingTop: 26 }}>
           <div style={{ textAlign: "center", marginBottom: 22 }}>
             <div style={{ ...styles.sectionTitle, marginBottom: 10 }}>Identité secrète</div>
-            <h2 style={{ ...styles.headingXL, fontSize: 32, margin: 0 }}>Ton rôle</h2>
+            <h2 style={{ ...styles.headingXL, fontSize: 32, margin: 0, color: COLORS.titleBlue }}>
+              Ton rôle
+            </h2>
           </div>
 
           <div style={{ ...styles.glassCard, padding: 24 }}>
@@ -2319,7 +2389,7 @@ function App() {
 
             <div style={{ textAlign: "center", marginTop: 24 }}>
               <div style={{ ...styles.labelUpper, color: roleAccent.text }}>Ton camp</div>
-              <div style={{ fontSize: 30, fontWeight: 800, marginTop: 14 }}>
+              <div style={{ fontSize: 30, fontWeight: 800, marginTop: 14, color: COLORS.titleBlue }}>
                 {ROLE_LABELS[me?.role] || "Rôle inconnu"}
               </div>
               <div
@@ -2330,7 +2400,7 @@ function App() {
                   margin: "18px auto 24px",
                 }}
               />
-              <p style={{ ...styles.subtitle, fontSize: 18 }}>
+              <p style={{ ...styles.subtitle, fontSize: 18, color: COLORS.darkText }}>
                 {ROLE_DESCRIPTIONS[me?.role] || "Ton destin sera bientôt révélé."}
               </p>
             </div>
