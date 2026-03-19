@@ -217,7 +217,8 @@ function GlobalAnimations() {
           box-shadow 220ms ease,
           background 220ms ease,
           border-color 220ms ease,
-          opacity 180ms ease;
+          opacity 180ms ease,
+          filter 220ms ease;
       }
 
       button:hover {
@@ -356,6 +357,93 @@ function GlobalAnimations() {
         }
       }
 
+      @keyframes screenEnter {
+        0% {
+          opacity: 0;
+          transform: translateY(20px) scale(0.985);
+          filter: blur(8px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          filter: blur(0);
+        }
+      }
+
+      @keyframes cardFloat {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      @keyframes playersReveal {
+        0% {
+          opacity: 0;
+          transform: translateY(16px) scale(0.98);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes cinematicOverlay {
+        0%, 100% {
+          opacity: 0.48;
+        }
+        50% {
+          opacity: 0.62;
+        }
+      }
+
+      @keyframes moonSweep {
+        0%, 100% {
+          opacity: 0.18;
+          transform: translateX(-4%) translateY(0%);
+        }
+        50% {
+          opacity: 0.3;
+          transform: translateX(4%) translateY(-2%);
+        }
+      }
+
+      @keyframes dayGlow {
+        0%, 100% {
+          opacity: 0.18;
+        }
+        50% {
+          opacity: 0.30;
+        }
+      }
+
+      @keyframes nightGlow {
+        0%, 100% {
+          opacity: 0.20;
+        }
+        50% {
+          opacity: 0.36;
+        }
+      }
+
+      .screen-enter {
+        animation: screenEnter 480ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .floating-card {
+        animation:
+          cardFloat 5.2s ease-in-out infinite,
+          neonPulse 4s ease-in-out infinite,
+          neonBorderFlow 5s ease-in-out infinite;
+        will-change: transform;
+      }
+
+      .player-reveal {
+        animation: playersReveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
       .scroll-hidden::-webkit-scrollbar {
         display: none;
       }
@@ -488,6 +576,38 @@ function App() {
     if (playerFilter === "dead") return players.filter((p) => !p.alive)
     return players
   }, [players, playerFilter])
+
+  const phaseCinematic = useMemo(() => {
+    const phase = currentGame?.phase || "lobby"
+
+    if (phase === "night" || phase === "night_resolve") {
+      return {
+        overlay:
+          "radial-gradient(circle at 50% 18%, rgba(56,189,248,0.18), rgba(0,0,0,0) 26%), radial-gradient(circle at 52% 28%, rgba(168,85,247,0.22), rgba(0,0,0,0) 18%), linear-gradient(180deg, rgba(4,8,24,0.36), rgba(2,6,18,0.62))",
+        animation: "nightGlow 4.5s ease-in-out infinite",
+      }
+    }
+
+    if (phase === "day" || phase === "vote" || phase === "vote_resolve") {
+      return {
+        overlay:
+          "radial-gradient(circle at 50% 12%, rgba(250,204,21,0.18), rgba(0,0,0,0) 24%), radial-gradient(circle at 52% 24%, rgba(56,189,248,0.14), rgba(0,0,0,0) 18%), linear-gradient(180deg, rgba(10,18,36,0.22), rgba(4,7,15,0.42))",
+        animation: "dayGlow 4.5s ease-in-out infinite",
+      }
+    }
+
+    return {
+      overlay:
+        "radial-gradient(circle at 50% 18%, rgba(88,240,255,0.12), rgba(0,0,0,0) 26%), linear-gradient(180deg, rgba(4,8,24,0.24), rgba(4,7,15,0.36))",
+      animation: "cinematicOverlay 5.5s ease-in-out infinite",
+    }
+  }, [currentGame?.phase])
+
+  function getPlayerRevealStyle(index = 0) {
+    return {
+      animationDelay: `${index * 70}ms`,
+    }
+  }
 
   function getRoleMaxCount(roleKey) {
     if (roleKey === "loup" || roleKey === "villageois") return 10
@@ -1382,6 +1502,8 @@ function App() {
 
     screen: {
       padding: "20px",
+      position: "relative",
+      zIndex: 1,
     },
 
     headingXL: {
@@ -1548,8 +1670,28 @@ function App() {
       fontWeight: 700,
       cursor: "pointer",
       textTransform: "uppercase",
-      boxShadow: active ? "inset 0 0 18px rgba(103,232,249,0.10), 0 0 18px rgba(103,232,249,0.06)" : "none",
+      boxShadow: active
+        ? "inset 0 0 18px rgba(103,232,249,0.10), 0 0 18px rgba(103,232,249,0.06)"
+        : "none",
     }),
+
+    cinematicLayer: {
+      position: "fixed",
+      inset: 0,
+      pointerEvents: "none",
+      zIndex: 0,
+      mixBlendMode: "screen",
+    },
+
+    cinematicMoon: {
+      position: "fixed",
+      inset: 0,
+      pointerEvents: "none",
+      zIndex: 0,
+      background:
+        "radial-gradient(circle at 50% 18%, rgba(255,255,255,0.09), rgba(125,211,252,0.08) 8%, rgba(125,211,252,0.02) 18%, rgba(0,0,0,0) 28%)",
+      animation: "moonSweep 8s ease-in-out infinite",
+    },
   }
 
   function HeaderBar({ title, onBack, right }) {
@@ -1569,12 +1711,12 @@ function App() {
   function MessageBox({ text }) {
     return (
       <div
+        className="floating-card"
         style={{
           ...styles.glassCard,
           marginTop: 18,
           color: "#dbeafe",
           borderColor: "rgba(59,130,246,0.3)",
-          animation: "neonPulse 2.4s ease-in-out infinite, neonBorderFlow 3.8s ease-in-out infinite",
         }}
       >
         {text}
@@ -1650,7 +1792,7 @@ function App() {
 
   function HomeScreen() {
     return (
-      <div style={styles.screen}>
+      <div style={styles.screen} className="screen-enter">
         <div style={{ ...styles.topBar, padding: "24px 0 12px", borderBottom: "none" }}>
           <button style={styles.iconBtn}>
             <Menu size={22} />
@@ -1704,6 +1846,7 @@ function App() {
               textAlign: "left",
               cursor: "pointer",
             }}
+            className="floating-card"
           >
             <div
               style={{
@@ -1762,6 +1905,7 @@ function App() {
               textAlign: "left",
               cursor: "pointer",
             }}
+            className="floating-card"
           >
             <div
               style={{
@@ -1825,7 +1969,7 @@ function App() {
 
   function HostEntryScreen() {
     return (
-      <div style={styles.screen}>
+      <div style={styles.screen} className="screen-enter">
         <HeaderBar title="Créer comme maître du jeu" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
@@ -1836,7 +1980,7 @@ function App() {
             </h2>
           </div>
 
-          <div style={styles.glassCard}>
+          <div style={styles.glassCard} className="floating-card">
             <div style={{ display: "grid", gap: 14 }}>
               <input
                 type="text"
@@ -1862,7 +2006,7 @@ function App() {
 
   function PlayerEntryScreen() {
     return (
-      <div style={styles.screen}>
+      <div style={styles.screen} className="screen-enter">
         <HeaderBar title="Entrer comme joueur" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ paddingTop: 18, display: "grid", gap: 18 }}>
@@ -1873,7 +2017,7 @@ function App() {
             </h2>
           </div>
 
-          <div style={styles.glassCard}>
+          <div style={styles.glassCard} className="floating-card">
             <div style={{ display: "grid", gap: 14 }}>
               <input
                 type="text"
@@ -1903,7 +2047,7 @@ function App() {
 
   function HostLobbyScreen() {
     return (
-      <div style={styles.screen}>
+      <div style={styles.screen} className="screen-enter">
         <HeaderBar title="Salon Loup-Garou" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ textAlign: "center", paddingTop: 12, paddingBottom: 22 }}>
@@ -1924,7 +2068,7 @@ function App() {
         </div>
 
         <div style={{ display: "grid", gap: 18 }}>
-          <div style={styles.glassCard}>
+          <div style={styles.glassCard} className="floating-card">
             <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 10 }}>Joueurs connectés</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <div style={{ fontSize: 54, fontWeight: 800, textShadow: "0 0 16px rgba(103,232,249,0.10)" }}>
@@ -1957,14 +2101,14 @@ function App() {
             </div>
           </div>
 
-          <div style={styles.glassCard}>
+          <div style={styles.glassCard} className="floating-card">
             <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 12 }}>
               Nombre total de joueurs (4–44)
             </div>
             <PlayersNumberInput />
           </div>
 
-          <div style={{ ...styles.glassCard, padding: 0, overflow: "hidden" }}>
+          <div style={{ ...styles.glassCard, padding: 0, overflow: "hidden" }} className="floating-card">
             <div
               style={{
                 padding: 20,
@@ -2116,7 +2260,9 @@ function App() {
               {[{ name: currentGame.host_name, host: true }, ...players].map((player, index) => (
                 <div
                   key={`${player.name}-${index}`}
+                  className="player-reveal"
                   style={{
+                    ...getPlayerRevealStyle(index),
                     borderRadius: 999,
                     border: "1px solid rgba(59,130,246,0.32)",
                     padding: "10px 14px",
@@ -2125,7 +2271,8 @@ function App() {
                     alignItems: "center",
                     gap: 8,
                     boxShadow: "0 0 14px rgba(56,189,248,0.06)",
-                    animation: "neonBorderFlow 4.5s ease-in-out infinite",
+                    animation: `playersReveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both, neonBorderFlow 4.5s ease-in-out infinite`,
+                    animationDelay: `${index * 70}ms, 0ms`,
                   }}
                 >
                   <span
@@ -2189,7 +2336,7 @@ function App() {
           : getPhaseLabel(currentGame.phase)
 
     return (
-      <div style={styles.screen}>
+      <div style={styles.screen} className="screen-enter">
         <div style={styles.topBar}>
           <button onClick={goToHome} style={styles.iconBtn}>
             <ArrowLeft size={20} />
@@ -2204,7 +2351,7 @@ function App() {
         </div>
 
         <div style={{ paddingTop: 24, display: "grid", gap: 22 }}>
-          <div style={styles.glassCard}>
+          <div style={styles.glassCard} className="floating-card">
             <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
               <div
                 style={{
@@ -2263,13 +2410,15 @@ function App() {
           </div>
 
           <div style={{ display: "grid", gap: 14 }}>
-            {filteredPlayers.map((player) => {
+            {filteredPlayers.map((player, index) => {
               const accent = getRoleAccent(player.role)
               return (
                 <div
                   key={player.id}
+                  className="player-reveal"
                   style={{
                     ...styles.softCard,
+                    ...getPlayerRevealStyle(index),
                     display: "grid",
                     gridTemplateColumns: "1fr auto",
                     alignItems: "center",
@@ -2440,7 +2589,7 @@ function App() {
 
   function PlayerLobbyScreen() {
     return (
-      <div style={styles.screen}>
+      <div style={styles.screen} className="screen-enter">
         <HeaderBar title="Loup-Garou" onBack={goToHome} right={<Settings size={20} />} />
 
         <div style={{ textAlign: "center", paddingTop: 8 }}>
@@ -2463,7 +2612,7 @@ function App() {
         </div>
 
         <div style={{ paddingTop: 20, display: "grid", gap: 18 }}>
-          <div style={{ ...styles.glassCard, textAlign: "center", padding: 28 }}>
+          <div style={{ ...styles.glassCard, textAlign: "center", padding: 28 }} className="floating-card">
             <div
               style={{
                 width: 86,
@@ -2501,7 +2650,9 @@ function App() {
               (player, index) => (
                 <div
                   key={`${player.name}-${index}`}
+                  className="player-reveal"
                   style={{
+                    ...getPlayerRevealStyle(index),
                     padding: "18px 20px",
                     borderTop: index === 0 ? "none" : "1px solid rgba(148,163,184,0.1)",
                     display: "grid",
@@ -2584,7 +2735,7 @@ function App() {
           : getPhaseLabel(currentGame.phase).toUpperCase()
 
     return (
-      <div style={styles.screen}>
+      <div style={styles.screen} className="screen-enter">
         <div style={{ ...styles.topBar, justifyContent: "center", position: "relative" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 18, fontWeight: 800 }}>{phaseLabel}</div>
@@ -2620,7 +2771,7 @@ function App() {
             </h2>
           </div>
 
-          <div style={{ ...styles.glassCard, padding: 24 }}>
+          <div style={{ ...styles.glassCard, padding: 24 }} className="floating-card">
             <div
               style={{
                 borderRadius: 24,
@@ -2761,6 +2912,14 @@ function App() {
     <div style={styles.page}>
       <GlobalAnimations />
       <div style={styles.forestGlow} />
+      <div
+        style={{
+          ...styles.cinematicLayer,
+          background: phaseCinematic.overlay,
+          animation: phaseCinematic.animation,
+        }}
+      />
+      <div style={styles.cinematicMoon} />
       <div style={styles.mobile}>{renderScreen()}</div>
     </div>
   )
