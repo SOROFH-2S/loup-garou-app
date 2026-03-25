@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   ArrowLeft,
   ChevronRight,
@@ -230,8 +230,7 @@ function GlobalAnimations() {
         border-color: rgba(103, 232, 249, 0.48) !important;
         box-shadow:
           0 0 0 1px rgba(103, 232, 249, 0.22),
-          0 0 18px rgba(56, 189, 248, 0.12),
-          inset 0 1px 0 rgba(255,255,255,0.04);
+          0 0 12px rgba(56, 189, 248, 0.10);
         background: rgba(255,255,255,0.06) !important;
       }
 
@@ -239,41 +238,37 @@ function GlobalAnimations() {
         0%, 100% {
           box-shadow:
             0 0 0 rgba(56,189,248,0),
-            0 0 18px rgba(56,189,248,0.08),
-            0 0 36px rgba(217,70,239,0.06);
+            0 0 12px rgba(56,189,248,0.06);
         }
         50% {
           box-shadow:
-            0 0 12px rgba(56,189,248,0.16),
-            0 0 26px rgba(56,189,248,0.18),
-            0 0 44px rgba(217,70,239,0.14);
+            0 0 8px rgba(56,189,248,0.12),
+            0 0 18px rgba(217,70,239,0.10);
         }
       }
 
       @keyframes neonBorderFlow {
         0% { border-color: rgba(103,232,249,0.18); }
-        50% { border-color: rgba(217,70,239,0.24); }
+        50% { border-color: rgba(217,70,239,0.20); }
         100% { border-color: rgba(103,232,249,0.18); }
       }
 
       @keyframes titleGlow {
         0%, 100% {
           text-shadow:
-            0 0 10px rgba(56,189,248,0.28),
-            0 0 26px rgba(56,189,248,0.18),
-            0 0 46px rgba(217,70,239,0.10);
+            0 0 8px rgba(56,189,248,0.22),
+            0 0 18px rgba(217,70,239,0.08);
         }
         50% {
           text-shadow:
-            0 0 14px rgba(56,189,248,0.40),
-            0 0 34px rgba(56,189,248,0.28),
-            0 0 62px rgba(217,70,239,0.18);
+            0 0 12px rgba(56,189,248,0.32),
+            0 0 26px rgba(217,70,239,0.14);
         }
       }
 
       @keyframes floatMoon {
         0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-        50% { transform: translate3d(0, -10px, 0) scale(1.02); }
+        50% { transform: translate3d(0, -8px, 0) scale(1.01); }
       }
 
       @keyframes shimmer {
@@ -282,62 +277,51 @@ function GlobalAnimations() {
       }
 
       @keyframes badgePulse {
-        0%, 100% {
-          box-shadow:
-            0 0 0 rgba(103,232,249,0),
-            0 0 12px rgba(103,232,249,0.10);
-        }
-        50% {
-          box-shadow:
-            0 0 12px rgba(103,232,249,0.18),
-            0 0 28px rgba(103,232,249,0.16);
-        }
+        0%, 100% { box-shadow: 0 0 10px rgba(103,232,249,0.08); }
+        50% { box-shadow: 0 0 18px rgba(103,232,249,0.14); }
       }
 
       @keyframes ambientFog {
         0%, 100% {
-          opacity: 0.94;
-          filter: saturate(1.05) contrast(1.02) brightness(1);
+          opacity: 0.95;
+          filter: saturate(1.03) contrast(1.01) brightness(1);
         }
         50% {
           opacity: 1;
-          filter: saturate(1.12) contrast(1.06) brightness(1.03);
+          filter: saturate(1.08) contrast(1.03) brightness(1.02);
         }
       }
 
       @keyframes roleCardGlow {
         0%, 100% {
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.03),
-            0 0 0 rgba(56,189,248,0),
-            0 12px 30px rgba(0,0,0,0.28);
+            0 8px 20px rgba(0,0,0,0.22);
         }
         50% {
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.03),
-            0 0 18px rgba(56,189,248,0.08),
-            0 12px 30px rgba(0,0,0,0.30);
+            0 8px 20px rgba(0,0,0,0.24),
+            0 0 12px rgba(56,189,248,0.06);
         }
       }
 
       @keyframes iconOrb {
         0%, 100% {
           box-shadow:
-            0 0 14px rgba(56,189,248,0.10),
-            0 0 26px rgba(217,70,239,0.06);
+            0 0 10px rgba(56,189,248,0.08),
+            0 0 18px rgba(217,70,239,0.04);
         }
         50% {
           box-shadow:
-            0 0 18px rgba(56,189,248,0.18),
-            0 0 36px rgba(217,70,239,0.14);
+            0 0 14px rgba(56,189,248,0.14),
+            0 0 24px rgba(217,70,239,0.10);
         }
       }
 
       @keyframes screenEnter {
         0% {
           opacity: 0;
-          transform: translateY(20px) scale(0.985);
-          filter: blur(8px);
+          transform: translateY(16px) scale(0.99);
+          filter: blur(6px);
         }
         100% {
           opacity: 1;
@@ -348,13 +332,13 @@ function GlobalAnimations() {
 
       @keyframes cardFloat {
         0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-6px); }
+        50% { transform: translateY(-4px); }
       }
 
       @keyframes playersReveal {
         0% {
           opacity: 0;
-          transform: translateY(16px) scale(0.98);
+          transform: translateY(14px) scale(0.985);
         }
         100% {
           opacity: 1;
@@ -363,45 +347,44 @@ function GlobalAnimations() {
       }
 
       @keyframes cinematicOverlay {
-        0%, 100% { opacity: 0.48; }
-        50% { opacity: 0.62; }
+        0%, 100% { opacity: 0.42; }
+        50% { opacity: 0.54; }
       }
 
       @keyframes moonSweep {
         0%, 100% {
-          opacity: 0.18;
-          transform: translateX(-4%) translateY(0%);
+          opacity: 0.16;
+          transform: translateX(-3%) translateY(0%);
         }
         50% {
-          opacity: 0.3;
-          transform: translateX(4%) translateY(-2%);
+          opacity: 0.24;
+          transform: translateX(3%) translateY(-2%);
         }
       }
 
       @keyframes dayGlow {
+        0%, 100% { opacity: 0.16; }
+        50% { opacity: 0.24; }
+      }
+
+      @keyframes nightGlow {
         0%, 100% { opacity: 0.18; }
         50% { opacity: 0.30; }
       }
 
-      @keyframes nightGlow {
-        0%, 100% { opacity: 0.20; }
-        50% { opacity: 0.36; }
-      }
-
       .screen-enter {
-        animation: screenEnter 480ms cubic-bezier(0.22, 1, 0.36, 1);
+        animation: screenEnter 380ms cubic-bezier(0.22, 1, 0.36, 1);
       }
 
       .floating-card {
         animation:
-          cardFloat 5.2s ease-in-out infinite,
-          neonPulse 4s ease-in-out infinite,
-          neonBorderFlow 5s ease-in-out infinite;
+          cardFloat 7s ease-in-out infinite,
+          neonPulse 6s ease-in-out infinite;
         will-change: transform;
       }
 
       .player-reveal {
-        animation: playersReveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation: playersReveal 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
       }
 
       .scroll-hidden::-webkit-scrollbar { display: none; }
@@ -425,6 +408,7 @@ function App() {
   const [expectedPlayers, setExpectedPlayers] = useState(10)
   const [expectedPlayersInput, setExpectedPlayersInput] = useState("10")
   const [showHiddenRoles, setShowHiddenRoles] = useState(false)
+  const [highlightedRole, setHighlightedRole] = useState("")
   const [roleConfig, setRoleConfig] = useState({
     ...EMPTY_ROLE_CONFIG,
     loup: 2,
@@ -437,6 +421,10 @@ function App() {
   const [activeHostTab, setActiveHostTab] = useState("game")
   const [activePlayerTab, setActivePlayerTab] = useState("profil")
   const [playerFilter, setPlayerFilter] = useState("all")
+
+  const hostNameRef = useRef(null)
+  const playerNameRef = useRef(null)
+  const expectedPlayersRef = useRef(null)
 
   function generateCode() {
     return Math.random().toString(36).substring(2, 8).toUpperCase()
@@ -461,10 +449,20 @@ function App() {
     return Math.min(44, Math.max(4, parsed))
   }
 
+  function getExpectedPlayersFromRef() {
+    const rawValue = expectedPlayersRef.current?.value ?? expectedPlayersInput
+    const validated = validateExpectedPlayersInput(rawValue, expectedPlayers)
+    return validated
+  }
+
   function commitExpectedPlayersInput() {
-    const validated = validateExpectedPlayersInput(expectedPlayersInput)
+    const validated = getExpectedPlayersFromRef()
     setExpectedPlayers(validated)
     setExpectedPlayersInput(String(validated))
+
+    if (expectedPlayersRef.current) {
+      expectedPlayersRef.current.value = String(validated)
+    }
   }
 
   function persistGameSession({
@@ -509,6 +507,7 @@ function App() {
     setExpectedPlayers(10)
     setExpectedPlayersInput("10")
     setShowHiddenRoles(false)
+    setHighlightedRole("")
     setActiveHostTab("game")
     setActivePlayerTab("profil")
     setPlayerFilter("all")
@@ -521,6 +520,10 @@ function App() {
       chasseur: 1,
       villageois: 4,
     })
+
+    if (hostNameRef.current) hostNameRef.current.value = ""
+    if (playerNameRef.current) playerNameRef.current.value = ""
+    if (expectedPlayersRef.current) expectedPlayersRef.current.value = "10"
   }
 
   const totalConfiguredRoles = useMemo(() => {
@@ -542,7 +545,7 @@ function App() {
     if (phase === "night" || phase === "night_resolve") {
       return {
         overlay:
-          "radial-gradient(circle at 50% 18%, rgba(56,189,248,0.18), rgba(0,0,0,0) 26%), radial-gradient(circle at 52% 28%, rgba(168,85,247,0.22), rgba(0,0,0,0) 18%), linear-gradient(180deg, rgba(4,8,24,0.36), rgba(2,6,18,0.62))",
+          "radial-gradient(circle at 50% 18%, rgba(56,189,248,0.18), rgba(0,0,0,0) 26%), radial-gradient(circle at 52% 28%, rgba(168,85,247,0.18), rgba(0,0,0,0) 18%), linear-gradient(180deg, rgba(4,8,24,0.30), rgba(2,6,18,0.54))",
         animation: "nightGlow 4.5s ease-in-out infinite",
       }
     }
@@ -550,14 +553,14 @@ function App() {
     if (phase === "day" || phase === "vote" || phase === "vote_resolve") {
       return {
         overlay:
-          "radial-gradient(circle at 50% 12%, rgba(250,204,21,0.18), rgba(0,0,0,0) 24%), radial-gradient(circle at 52% 24%, rgba(56,189,248,0.14), rgba(0,0,0,0) 18%), linear-gradient(180deg, rgba(10,18,36,0.22), rgba(4,7,15,0.42))",
+          "radial-gradient(circle at 50% 12%, rgba(250,204,21,0.16), rgba(0,0,0,0) 24%), radial-gradient(circle at 52% 24%, rgba(56,189,248,0.12), rgba(0,0,0,0) 18%), linear-gradient(180deg, rgba(10,18,36,0.18), rgba(4,7,15,0.34))",
         animation: "dayGlow 4.5s ease-in-out infinite",
       }
     }
 
     return {
       overlay:
-        "radial-gradient(circle at 50% 18%, rgba(88,240,255,0.12), rgba(0,0,0,0) 26%), linear-gradient(180deg, rgba(4,8,24,0.24), rgba(4,7,15,0.36))",
+        "radial-gradient(circle at 50% 18%, rgba(88,240,255,0.10), rgba(0,0,0,0) 26%), linear-gradient(180deg, rgba(4,8,24,0.20), rgba(4,7,15,0.30))",
       animation: "cinematicOverlay 5.5s ease-in-out infinite",
     }
   }, [currentGame?.phase])
@@ -578,6 +581,16 @@ function App() {
       const currentValue = prev[roleKey] || 0
       const maxValue = getRoleMaxCount(roleKey)
       const nextValue = Math.min(maxValue, Math.max(0, currentValue + delta))
+
+      if (delta > 0 && currentValue === 0 && nextValue > 0) {
+        setHighlightedRole(roleKey)
+        setShowHiddenRoles(false)
+
+        setTimeout(() => {
+          setHighlightedRole((current) => (current === roleKey ? "" : current))
+        }, 1800)
+      }
+
       return { ...prev, [roleKey]: nextValue }
     })
   }
@@ -800,11 +813,14 @@ function App() {
   async function createGameAsHost() {
     setMessage("")
 
-    const validatedPlayers = validateExpectedPlayersInput(expectedPlayersInput, expectedPlayers)
+    const hostNameValue = hostNameRef.current?.value?.trim() || ""
+    const validatedPlayers = getExpectedPlayersFromRef()
+
     setExpectedPlayers(validatedPlayers)
     setExpectedPlayersInput(String(validatedPlayers))
+    setHostName(hostNameValue)
 
-    if (!hostName.trim()) {
+    if (!hostNameValue) {
       setMessage("Entre le nom du maître du jeu")
       return
     }
@@ -830,7 +846,7 @@ function App() {
       .insert([
         {
           code,
-          host_name: hostName.trim(),
+          host_name: hostNameValue,
           host_session_id: sessionId,
           status: "lobby",
           expected_players: validatedPlayers,
@@ -854,7 +870,7 @@ function App() {
     persistGameSession({
       gameId: game.id,
       mode: "host",
-      hostNameValue: hostName.trim(),
+      hostNameValue,
     })
 
     setCurrentGame(game)
@@ -865,6 +881,7 @@ function App() {
       ...(game.role_config || {}),
     })
     setShowHiddenRoles(false)
+    setHighlightedRole("")
     setMessage("Partie créée avec succès")
     await loadPlayers(game.id)
   }
@@ -872,12 +889,17 @@ function App() {
   async function joinGameAsPlayer() {
     setMessage("")
 
-    if (!playerName.trim()) {
+    const playerNameValue = playerNameRef.current?.value?.trim() || ""
+    const joinCodeValue = joinCode.trim()
+
+    setPlayerName(playerNameValue)
+
+    if (!playerNameValue) {
       setMessage("Entre ton nom")
       return
     }
 
-    if (!joinCode.trim()) {
+    if (!joinCodeValue) {
       setMessage("Entre le code de la partie")
       return
     }
@@ -888,7 +910,7 @@ function App() {
     const { data: games, error: gameError } = await supabase
       .from("games")
       .select("*")
-      .eq("code", joinCode.trim().toUpperCase())
+      .eq("code", joinCodeValue.toUpperCase())
 
     if (gameError) {
       console.error(gameError)
@@ -955,7 +977,7 @@ function App() {
     }
 
     const duplicateName = existingPlayers.some(
-      (p) => normalizeName(p.name) === normalizeName(playerName)
+      (p) => normalizeName(p.name) === normalizeName(playerNameValue)
     )
 
     if (duplicateName) {
@@ -966,7 +988,7 @@ function App() {
     const { error: playerError } = await supabase.from("players").insert([
       {
         game_id: game.id,
-        name: playerName.trim(),
+        name: playerNameValue,
         session_id: sessionId,
         is_host: false,
         alive: true,
@@ -982,7 +1004,7 @@ function App() {
     persistGameSession({
       gameId: game.id,
       mode: "player",
-      playerNameValue: playerName.trim(),
+      playerNameValue,
     })
 
     setEntryMode("player")
@@ -1000,7 +1022,7 @@ function App() {
   async function saveHostConfiguration() {
     if (!currentGame) return
 
-    const validatedPlayers = validateExpectedPlayersInput(expectedPlayersInput, expectedPlayers)
+    const validatedPlayers = getExpectedPlayersFromRef()
     setExpectedPlayers(validatedPlayers)
     setExpectedPlayersInput(String(validatedPlayers))
 
@@ -1043,7 +1065,7 @@ function App() {
   async function startGame() {
     if (!currentGame) return
 
-    const validatedPlayers = validateExpectedPlayersInput(expectedPlayersInput, expectedPlayers)
+    const validatedPlayers = getExpectedPlayersFromRef()
     setExpectedPlayers(validatedPlayers)
     setExpectedPlayersInput(String(validatedPlayers))
 
@@ -1257,6 +1279,12 @@ function App() {
           ...EMPTY_ROLE_CONFIG,
           ...(game.role_config || {}),
         })
+
+        if (hostNameRef.current) hostNameRef.current.value = savedHostName || game.host_name || ""
+        if (expectedPlayersRef.current) {
+          expectedPlayersRef.current.value = String(game.expected_players || 10)
+        }
+
         await loadPlayers(game.id)
         return
       }
@@ -1283,6 +1311,9 @@ function App() {
           ...EMPTY_ROLE_CONFIG,
           ...(game.role_config || {}),
         })
+
+        if (playerNameRef.current) playerNameRef.current.value = savedPlayerName || player.name || ""
+
         await loadPlayers(game.id)
       }
     }
@@ -1329,6 +1360,9 @@ function App() {
             if (data.expected_players) {
               setExpectedPlayers(data.expected_players)
               setExpectedPlayersInput(String(data.expected_players))
+              if (expectedPlayersRef.current) {
+                expectedPlayersRef.current.value = String(data.expected_players)
+              }
             }
             if (data.role_config) {
               setRoleConfig({
@@ -1431,8 +1465,8 @@ function App() {
       background:
         "linear-gradient(180deg, rgba(5,8,22,0.22), rgba(5,8,20,0.34), rgba(4,7,15,0.48))",
       boxShadow:
-        "0 30px 80px rgba(0,0,0,0.55), 0 0 42px rgba(56,189,248,0.08), 0 0 62px rgba(217,70,239,0.06)",
-      backdropFilter: "blur(4px)",
+        "0 24px 60px rgba(0,0,0,0.48), 0 0 28px rgba(56,189,248,0.06), 0 0 38px rgba(217,70,239,0.04)",
+      backdropFilter: "none",
     },
 
     topBar: {
@@ -1442,7 +1476,7 @@ function App() {
       padding: "22px 20px 18px",
       borderBottom: "1px solid rgba(103,232,249,0.10)",
       background: "rgba(5, 8, 20, 0.18)",
-      backdropFilter: "blur(8px)",
+      backdropFilter: "blur(3px)",
     },
 
     iconBtn: {
@@ -1456,7 +1490,7 @@ function App() {
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
-      boxShadow: "0 8px 24px rgba(0,0,0,0.22)",
+      boxShadow: "0 6px 18px rgba(0,0,0,0.18)",
       animation: "iconOrb 2.8s ease-in-out infinite, neonBorderFlow 4s ease-in-out infinite",
     },
 
@@ -1473,7 +1507,7 @@ function App() {
       fontWeight: 800,
       letterSpacing: "-0.04em",
       color: "#e0f2fe",
-      textShadow: "0 0 24px rgba(88,240,255,0.08)",
+      textShadow: "0 0 16px rgba(88,240,255,0.08)",
       animation: "titleGlow 3.2s ease-in-out infinite",
     },
 
@@ -1490,7 +1524,7 @@ function App() {
       color: "#67e8f9",
       textTransform: "uppercase",
       fontWeight: 700,
-      textShadow: "0 0 10px rgba(103,232,249,0.28)",
+      textShadow: "0 0 10px rgba(103,232,249,0.24)",
     },
 
     glassCard: {
@@ -1500,9 +1534,9 @@ function App() {
       borderRadius: 24,
       padding: 20,
       boxShadow:
-        "0 18px 40px rgba(0,0,0,0.40), inset 0 1px 0 rgba(103,232,249,0.05), 0 0 18px rgba(56,189,248,0.06), 0 0 28px rgba(217,70,239,0.05)",
-      backdropFilter: "blur(10px)",
-      animation: "neonPulse 4s ease-in-out infinite, neonBorderFlow 5s ease-in-out infinite",
+        "0 10px 24px rgba(0,0,0,0.32), inset 0 1px 0 rgba(103,232,249,0.04), 0 0 12px rgba(56,189,248,0.04)",
+      backdropFilter: "blur(4px)",
+      animation: "neonPulse 6s ease-in-out infinite, neonBorderFlow 6s ease-in-out infinite",
     },
 
     softCard: {
@@ -1511,8 +1545,8 @@ function App() {
       border: "1px solid rgba(129,140,248,0.12)",
       borderRadius: 20,
       padding: 18,
-      boxShadow: "0 10px 30px rgba(0,0,0,0.28)",
-      animation: "roleCardGlow 4.5s ease-in-out infinite",
+      boxShadow: "0 8px 20px rgba(0,0,0,0.24)",
+      animation: "roleCardGlow 5.2s ease-in-out infinite",
     },
 
     primaryBtn: {
@@ -1532,9 +1566,9 @@ function App() {
       justifyContent: "center",
       gap: 10,
       boxShadow:
-        "0 14px 30px rgba(37,99,235,0.32), 0 0 24px rgba(217,70,239,0.16), 0 0 18px rgba(56,189,248,0.16)",
+        "0 12px 24px rgba(37,99,235,0.24), 0 0 14px rgba(56,189,248,0.10)",
       cursor: "pointer",
-      animation: "shimmer 5s linear infinite, neonPulse 2.8s ease-in-out infinite",
+      animation: "shimmer 6s linear infinite, neonPulse 4s ease-in-out infinite",
     },
 
     secondaryBtn: {
@@ -1550,8 +1584,8 @@ function App() {
       gap: 8,
       cursor: "pointer",
       padding: "0 16px",
-      boxShadow: "0 8px 24px rgba(0,0,0,0.18), 0 0 16px rgba(56,189,248,0.05)",
-      animation: "neonBorderFlow 5s ease-in-out infinite",
+      boxShadow: "0 6px 18px rgba(0,0,0,0.16)",
+      animation: "neonBorderFlow 6s ease-in-out infinite",
     },
 
     field: {
@@ -1581,8 +1615,8 @@ function App() {
       fontWeight: 700,
       letterSpacing: "0.14em",
       textTransform: "uppercase",
-      boxShadow: "0 8px 22px rgba(0,0,0,0.20)",
-      animation: "badgePulse 2.6s ease-in-out infinite, neonBorderFlow 4s ease-in-out infinite",
+      boxShadow: "0 6px 16px rgba(0,0,0,0.18)",
+      animation: "badgePulse 3.2s ease-in-out infinite, neonBorderFlow 5s ease-in-out infinite",
     },
 
     sectionTitle: {
@@ -1592,7 +1626,7 @@ function App() {
       color: "#d7def7",
       letterSpacing: "0.1em",
       textTransform: "uppercase",
-      textShadow: "0 0 12px rgba(103,232,249,0.08)",
+      textShadow: "0 0 8px rgba(103,232,249,0.06)",
     },
 
     bottomNav: {
@@ -1609,10 +1643,10 @@ function App() {
       gridTemplateColumns: "repeat(4, 1fr)",
       padding: 12,
       boxShadow:
-        "0 20px 50px rgba(0,0,0,0.50), 0 0 26px rgba(56,189,248,0.06), 0 0 34px rgba(217,70,239,0.05)",
+        "0 16px 36px rgba(0,0,0,0.42), 0 0 18px rgba(56,189,248,0.04)",
       zIndex: 5,
-      backdropFilter: "blur(14px)",
-      animation: "neonPulse 4.8s ease-in-out infinite",
+      backdropFilter: "blur(6px)",
+      animation: "neonPulse 6s ease-in-out infinite",
     },
 
     navItem: (active) => ({
@@ -1630,9 +1664,7 @@ function App() {
       fontWeight: 700,
       cursor: "pointer",
       textTransform: "uppercase",
-      boxShadow: active
-        ? "inset 0 0 18px rgba(103,232,249,0.10), 0 0 18px rgba(103,232,249,0.06)"
-        : "none",
+      boxShadow: active ? "inset 0 0 12px rgba(103,232,249,0.08)" : "none",
     }),
 
     cinematicLayer: {
@@ -1649,7 +1681,7 @@ function App() {
       pointerEvents: "none",
       zIndex: 0,
       background:
-        "radial-gradient(circle at 50% 18%, rgba(255,255,255,0.09), rgba(125,211,252,0.08) 8%, rgba(125,211,252,0.02) 18%, rgba(0,0,0,0) 28%)",
+        "radial-gradient(circle at 50% 18%, rgba(255,255,255,0.08), rgba(125,211,252,0.06) 8%, rgba(125,211,252,0.02) 18%, rgba(0,0,0,0) 28%)",
       animation: "moonSweep 8s ease-in-out infinite",
     },
   }
@@ -1718,8 +1750,8 @@ function App() {
           color: danger ? "#ff79c8" : "#f8fafc",
           border: `1px solid ${danger ? "rgba(255,121,200,0.26)" : "rgba(103,232,249,0.16)"}`,
           boxShadow: danger
-            ? "0 10px 30px rgba(0,0,0,0.28), 0 0 20px rgba(255,121,200,0.10)"
-            : "0 10px 30px rgba(0,0,0,0.28), 0 0 20px rgba(56,189,248,0.08)",
+            ? "0 10px 24px rgba(0,0,0,0.22), 0 0 12px rgba(255,121,200,0.08)"
+            : "0 10px 24px rgba(0,0,0,0.22), 0 0 12px rgba(56,189,248,0.06)",
         }}
       >
         <Icon size={30} />
@@ -1731,14 +1763,12 @@ function App() {
   function PlayersNumberInput() {
     return (
       <input
+        ref={expectedPlayersRef}
         type="number"
         min="4"
         max="44"
         inputMode="numeric"
-        value={expectedPlayersInput}
-        onChange={(e) => {
-          setExpectedPlayersInput(e.target.value)
-        }}
+        defaultValue={expectedPlayersInput}
         onBlur={commitExpectedPlayersInput}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -1763,6 +1793,19 @@ function App() {
           gridTemplateColumns: "1fr auto",
           alignItems: "center",
           gap: 16,
+          background:
+            highlightedRole === roleKey
+              ? "linear-gradient(90deg, rgba(56,189,248,0.12), rgba(124,58,237,0.10))"
+              : "transparent",
+          boxShadow:
+            highlightedRole === roleKey
+              ? "inset 0 0 0 1px rgba(103,232,249,0.18), 0 0 24px rgba(56,189,248,0.10)"
+              : "none",
+          animation:
+            highlightedRole === roleKey
+              ? "playersReveal 320ms cubic-bezier(0.22, 1, 0.36, 1), neonPulse 1.4s ease-in-out 2"
+              : "none",
+          transition: "background 280ms ease, box-shadow 280ms ease",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -1778,8 +1821,8 @@ function App() {
               justifyContent: "center",
               color: accent.text,
               fontWeight: 900,
-              boxShadow: `0 0 16px ${accent.border}`,
-              animation: "iconOrb 2.4s ease-in-out infinite",
+              boxShadow: `0 0 12px ${accent.border}`,
+              animation: "iconOrb 2.8s ease-in-out infinite",
             }}
           >
             {ROLE_LABELS[roleKey].slice(0, 1)}
@@ -1825,7 +1868,7 @@ function App() {
                 textAlign: "center",
                 fontSize: 24,
                 fontWeight: 800,
-                textShadow: "0 0 12px rgba(103,232,249,0.10)",
+                textShadow: "0 0 8px rgba(103,232,249,0.10)",
               }}
             >
               {roleConfig[roleKey]}
@@ -1918,7 +1961,7 @@ function App() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 10px 24px rgba(29,78,216,0.35), 0 0 18px rgba(103,232,249,0.16)",
+                boxShadow: "0 10px 20px rgba(29,78,216,0.26), 0 0 12px rgba(103,232,249,0.12)",
                 color: "#fff",
                 animation: "iconOrb 2.6s ease-in-out infinite",
               }}
@@ -1933,7 +1976,7 @@ function App() {
                   fontWeight: 800,
                   marginBottom: 6,
                   color: COLORS.primaryBlue,
-                  textShadow: "0 0 14px rgba(56,189,248,0.18)",
+                  textShadow: "0 0 10px rgba(56,189,248,0.14)",
                 }}
               >
                 Maître du jeu
@@ -1978,7 +2021,7 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#fff",
-                boxShadow: "0 0 18px rgba(103,232,249,0.08)",
+                boxShadow: "0 0 12px rgba(103,232,249,0.06)",
                 animation: "iconOrb 2.6s ease-in-out infinite",
               }}
             >
@@ -1992,7 +2035,7 @@ function App() {
                   fontWeight: 800,
                   marginBottom: 6,
                   color: COLORS.primaryBlue,
-                  textShadow: "0 0 14px rgba(56,189,248,0.18)",
+                  textShadow: "0 0 10px rgba(56,189,248,0.14)",
                 }}
               >
                 Entrer comme joueur
@@ -2048,10 +2091,10 @@ function App() {
           <div style={styles.glassCard} className="floating-card">
             <div style={{ display: "grid", gap: 14 }}>
               <input
+                ref={hostNameRef}
                 type="text"
                 placeholder="Nom du maître du jeu"
-                value={hostName}
-                onChange={(e) => setHostName(e.target.value)}
+                defaultValue={hostName}
                 style={styles.field}
               />
 
@@ -2089,10 +2132,10 @@ function App() {
           <div style={styles.glassCard} className="floating-card">
             <div style={{ display: "grid", gap: 14 }}>
               <input
+                ref={playerNameRef}
                 type="text"
                 placeholder="Ton nom"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
+                defaultValue={playerName}
                 style={styles.field}
               />
               <input
@@ -2154,7 +2197,7 @@ function App() {
           <div style={styles.glassCard} className="floating-card">
             <div style={{ color: "#d7def7", fontSize: 15, marginBottom: 10 }}>Joueurs connectés</div>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{ fontSize: 54, fontWeight: 800, textShadow: "0 0 16px rgba(103,232,249,0.10)" }}>
+              <div style={{ fontSize: 54, fontWeight: 800, textShadow: "0 0 12px rgba(103,232,249,0.08)" }}>
                 {players.length}/{expectedPlayers}
               </div>
               <div style={{ display: "flex", marginLeft: 6 }}>
@@ -2173,7 +2216,7 @@ function App() {
                       marginLeft: index === 0 ? 0 : -8,
                       fontSize: 12,
                       fontWeight: 800,
-                      boxShadow: "0 0 16px rgba(56,189,248,0.12)",
+                      boxShadow: "0 0 10px rgba(56,189,248,0.08)",
                       animation: "iconOrb 2.8s ease-in-out infinite",
                     }}
                   >
@@ -2209,6 +2252,7 @@ function App() {
                     const suggested = generateSuggestedRoles(expectedPlayers)
                     setRoleConfig(suggested)
                     setShowHiddenRoles(false)
+                    setHighlightedRole("")
                     setMessage("Composition intelligente générée")
                   }}
                   style={styles.secondaryBtn}
@@ -2218,6 +2262,7 @@ function App() {
                 <button
                   onClick={() => {
                     setRoleConfig({ ...EMPTY_ROLE_CONFIG })
+                    setHighlightedRole("")
                     setMessage("Rôles réinitialisés")
                   }}
                   style={styles.secondaryBtn}
@@ -2297,8 +2342,8 @@ function App() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 8,
-                    boxShadow: "0 0 14px rgba(56,189,248,0.06)",
-                    animation: `playersReveal 420ms cubic-bezier(0.22, 1, 0.36, 1) both, neonBorderFlow 4.5s ease-in-out infinite`,
+                    boxShadow: "0 0 10px rgba(56,189,248,0.04)",
+                    animation: `playersReveal 320ms cubic-bezier(0.22, 1, 0.36, 1) both, neonBorderFlow 5.5s ease-in-out infinite`,
                     animationDelay: `${index * 70}ms, 0ms`,
                   }}
                 >
@@ -2309,7 +2354,7 @@ function App() {
                       borderRadius: 999,
                       background: "#22c55e",
                       display: "inline-block",
-                      boxShadow: "0 0 10px rgba(34,197,94,0.6)",
+                      boxShadow: "0 0 8px rgba(34,197,94,0.5)",
                     }}
                   />
                   <span>
@@ -2340,8 +2385,8 @@ function App() {
               fontWeight: 700,
               textShadow:
                 totalConfiguredRoles === expectedPlayers
-                  ? "0 0 12px rgba(34,197,94,0.25)"
-                  : "0 0 12px rgba(245,158,11,0.18)",
+                  ? "0 0 8px rgba(34,197,94,0.20)"
+                  : "0 0 8px rgba(245,158,11,0.16)",
             }}
           >
             Rôles configurés : {totalConfiguredRoles} / {expectedPlayers}
@@ -2370,7 +2415,7 @@ function App() {
           </button>
           <div>
             <div style={{ fontSize: 17, fontWeight: 800 }}>Loup-Garou</div>
-            <div style={{ color: "#67e8f9", fontWeight: 700, textShadow: "0 0 12px rgba(103,232,249,0.16)" }}>
+            <div style={{ color: "#67e8f9", fontWeight: 700, textShadow: "0 0 10px rgba(103,232,249,0.14)" }}>
               SALON : {currentGame.code}
             </div>
           </div>
@@ -2389,7 +2434,7 @@ function App() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 14px 30px rgba(29,78,216,0.28), 0 0 24px rgba(103,232,249,0.16)",
+                  boxShadow: "0 12px 24px rgba(29,78,216,0.24), 0 0 18px rgba(103,232,249,0.12)",
                   color: "#fff",
                   animation: "iconOrb 2.6s ease-in-out infinite",
                 }}
@@ -2469,8 +2514,8 @@ function App() {
                           fontSize: 22,
                           fontWeight: 900,
                           boxShadow: player.alive
-                            ? "0 0 18px rgba(103,232,249,0.18)"
-                            : "0 0 10px rgba(148,163,184,0.08)",
+                            ? "0 0 14px rgba(103,232,249,0.14)"
+                            : "0 0 8px rgba(148,163,184,0.06)",
                         }}
                       >
                         {player.name.slice(0, 1).toUpperCase()}
@@ -2486,7 +2531,7 @@ function App() {
                           background: player.alive ? "#22c55e" : "#6b7280",
                           border: "2px solid #0b1220",
                           boxShadow: player.alive
-                            ? "0 0 10px rgba(34,197,94,0.6)"
+                            ? "0 0 8px rgba(34,197,94,0.5)"
                             : "none",
                         }}
                       />
@@ -2512,7 +2557,7 @@ function App() {
                             fontSize: 12,
                             fontWeight: 800,
                             border: `1px solid ${accent.border}`,
-                            boxShadow: `0 0 14px ${accent.border}`,
+                            boxShadow: `0 0 10px ${accent.border}`,
                           }}
                         >
                           {ROLE_LABELS[player.role] || "Inconnu"}
@@ -2549,9 +2594,9 @@ function App() {
                         justifyContent: "center",
                         cursor: "pointer",
                         boxShadow: player.alive
-                          ? "0 0 16px rgba(239,68,68,0.12)"
-                          : "0 0 16px rgba(34,197,94,0.12)",
-                        animation: "neonBorderFlow 4s ease-in-out infinite",
+                          ? "0 0 12px rgba(239,68,68,0.10)"
+                          : "0 0 12px rgba(34,197,94,0.10)",
+                        animation: "neonBorderFlow 5s ease-in-out infinite",
                       }}
                     >
                       {player.alive ? <UserMinus size={24} /> : <UserPlus size={24} />}
@@ -2595,7 +2640,7 @@ function App() {
                 ...styles.glassCard,
                 color: "#fca5a5",
                 fontWeight: 800,
-                textShadow: "0 0 12px rgba(252,165,165,0.16)",
+                textShadow: "0 0 8px rgba(252,165,165,0.12)",
               }}
             >
               Partie terminée{currentGame.winner ? ` — ${currentGame.winner}` : ""}
@@ -2646,7 +2691,7 @@ function App() {
             {currentGame.code}
           </div>
           <div style={{ marginTop: 10, color: "#b8c3e0", fontSize: 18 }}>
-            Hôte : <span style={{ color: "#67e8f9", textShadow: "0 0 12px rgba(103,232,249,0.16)" }}>{currentGame.host_name}</span>
+            Hôte : <span style={{ color: "#67e8f9", textShadow: "0 0 10px rgba(103,232,249,0.14)" }}>{currentGame.host_name}</span>
           </div>
         </div>
 
@@ -2663,7 +2708,7 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#67e8f9",
-                boxShadow: "0 0 24px rgba(56,189,248,0.12)",
+                boxShadow: "0 0 18px rgba(56,189,248,0.10)",
                 animation: "iconOrb 2.6s ease-in-out infinite",
               }}
             >
@@ -2711,7 +2756,7 @@ function App() {
                         alignItems: "center",
                         justifyContent: "center",
                         color: "#93c5fd",
-                        boxShadow: "0 0 14px rgba(103,232,249,0.10)",
+                        boxShadow: "0 0 10px rgba(103,232,249,0.08)",
                         animation: "iconOrb 2.8s ease-in-out infinite",
                       }}
                     >
@@ -2736,7 +2781,7 @@ function App() {
                       borderRadius: 999,
                       background: "#22c55e",
                       display: "inline-block",
-                      boxShadow: "0 0 10px rgba(34,197,94,0.6)",
+                      boxShadow: "0 0 8px rgba(34,197,94,0.5)",
                     }}
                   />
                 </div>
@@ -2778,7 +2823,7 @@ function App() {
         <div style={{ ...styles.topBar, justifyContent: "center", position: "relative" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 18, fontWeight: 800 }}>{phaseLabel}</div>
-            <div style={{ color: "#67e8f9", fontSize: 16, fontWeight: 700, marginTop: 4, textShadow: "0 0 12px rgba(103,232,249,0.16)" }}>
+            <div style={{ color: "#67e8f9", fontSize: 16, fontWeight: 700, marginTop: 4, textShadow: "0 0 10px rgba(103,232,249,0.14)" }}>
               {getPhaseLabel(currentGame.phase).toUpperCase()}
             </div>
           </div>
@@ -2793,7 +2838,7 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 color: "#67e8f9",
-                boxShadow: "0 0 18px rgba(103,232,249,0.12)",
+                boxShadow: "0 0 14px rgba(103,232,249,0.10)",
                 animation: "iconOrb 2.6s ease-in-out infinite",
               }}
             >
@@ -2822,8 +2867,8 @@ function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: 140,
-                boxShadow: "inset 0 0 30px rgba(56,189,248,0.06), 0 0 24px rgba(56,189,248,0.08)",
-                animation: "neonPulse 3.4s ease-in-out infinite, neonBorderFlow 4.8s ease-in-out infinite",
+                boxShadow: "inset 0 0 24px rgba(56,189,248,0.05), 0 0 16px rgba(56,189,248,0.06)",
+                animation: "neonPulse 4.5s ease-in-out infinite, neonBorderFlow 6s ease-in-out infinite",
               }}
             >
               {me?.role
@@ -2849,7 +2894,7 @@ function App() {
                   fontWeight: 800,
                   marginTop: 14,
                   color: COLORS.titleBlue,
-                  textShadow: `0 0 18px ${roleAccent.border}`,
+                  textShadow: `0 0 14px ${roleAccent.border}`,
                 }}
               >
                 {ROLE_LABELS[me?.role] || "Rôle inconnu"}
@@ -2860,7 +2905,7 @@ function App() {
                   height: 2,
                   background: "rgba(103,232,249,0.6)",
                   margin: "18px auto 24px",
-                  boxShadow: "0 0 12px rgba(103,232,249,0.5)",
+                  boxShadow: "0 0 10px rgba(103,232,249,0.4)",
                 }}
               />
               <p style={{ ...styles.subtitle, fontSize: 18, color: COLORS.darkText }}>
@@ -2875,8 +2920,8 @@ function App() {
                 background: "rgba(10, 18, 38, 0.72)",
                 border: "1px solid rgba(59,130,246,0.16)",
                 padding: 18,
-                boxShadow: "0 0 18px rgba(56,189,248,0.06)",
-                animation: "neonBorderFlow 5s ease-in-out infinite",
+                boxShadow: "0 0 12px rgba(56,189,248,0.04)",
+                animation: "neonBorderFlow 6s ease-in-out infinite",
               }}
             >
               <div style={{ ...styles.sectionTitle, marginBottom: 10, color: "#67e8f9" }}>
