@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ChevronRight,
   Flame,
+  FileText,
   Heart,
   Home,
   Menu,
@@ -18,6 +19,7 @@ import {
   UserMinus,
   UserPlus,
   Users,
+  X,
 } from "lucide-react"
 import { supabase } from "./supabase"
 import wolfMoon from "./assets/wolf-bg.webp"
@@ -134,6 +136,7 @@ const STORAGE_KEYS = {
   entryMode: "lg_entry_mode",
   playerName: "lg_player_name",
   hostName: "lg_host_name",
+  hostNotesPrefix: "lg_host_notes_",
 }
 
 const PHASE_LABELS = {
@@ -421,6 +424,8 @@ function App() {
   const [activeHostTab, setActiveHostTab] = useState("game")
   const [activePlayerTab, setActivePlayerTab] = useState("profil")
   const [playerFilter, setPlayerFilter] = useState("all")
+  const [hostNotesOpen, setHostNotesOpen] = useState(false)
+  const [hostNotes, setHostNotes] = useState("")
 
   const hostNameRef = useRef(null)
   const playerNameRef = useRef(null)
@@ -574,6 +579,10 @@ function App() {
   function getRoleMaxCount(roleKey) {
     if (roleKey === "loup" || roleKey === "villageois") return 10
     return 1
+  }
+
+  function getHostNotesStorageKey(gameId) {
+    return `${STORAGE_KEYS.hostNotesPrefix}${gameId}`
   }
 
   function changeRoleCount(roleKey, delta) {
@@ -1381,6 +1390,14 @@ function App() {
       supabase.removeChannel(channel)
     }
   }, [currentGame])
+
+  useEffect(() => {
+    if (!currentGame || !isRealHost) return
+
+    const storageKey = getHostNotesStorageKey(currentGame.id)
+    const savedNotes = localStorage.getItem(storageKey) || ""
+    setHostNotes(savedNotes)
+  }, [currentGame?.id, isRealHost])
 
   function getRoleAccent(roleKey) {
     if (WOLF_ROLES.includes(roleKey)) {
@@ -2423,6 +2440,13 @@ function App() {
         </div>
 
         <div style={{ paddingTop: 24, display: "grid", gap: 22 }}>
+          <button
+            onClick={() => setHostNotesOpen(true)}
+            style={{ ...styles.secondaryBtn, width: "100%", minHeight: 52 }}
+          >
+            <FileText size={18} /> Ouvrir les notes du maître du jeu
+          </button>
+
           <div style={styles.glassCard} className="floating-card">
             <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
               <div
@@ -2448,6 +2472,8 @@ function App() {
                 <div style={{ color: "#b8c3e0", fontSize: 16, lineHeight: 1.55 }}>
                   {getPhaseSubtext(currentGame.phase)}
                 </div>
+              </div>
+                 </div>
               </div>
             </div>
 
@@ -2663,6 +2689,89 @@ function App() {
           ],
           onPress: setActiveHostTab,
         })}
+
+        {hostNotesOpen ? (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 20,
+              background: "rgba(3, 7, 20, 0.72)",
+              backdropFilter: "blur(6px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                maxWidth: 460,
+                borderRadius: 22,
+                border: "1px solid rgba(129,140,248,0.26)",
+                background: "linear-gradient(180deg, rgba(10,16,34,0.96), rgba(7,12,25,0.96))",
+                boxShadow:
+                  "0 22px 56px rgba(0,0,0,0.56), 0 0 14px rgba(103,232,249,0.08)",
+                padding: 18,
+                display: "grid",
+                gap: 12,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                }}
+              >
+                <div style={{ ...styles.sectionTitle, margin: 0 }}>Notes du maître du jeu</div>
+                <button
+                  onClick={() => setHostNotesOpen(false)}
+                  style={{
+                    ...styles.iconBtn,
+                    width: 38,
+                    height: 38,
+                  }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <textarea
+                value={hostNotes}
+                onChange={(e) => {
+                  const nextValue = e.target.value
+                  setHostNotes(nextValue)
+                  localStorage.setItem(getHostNotesStorageKey(currentGame.id), nextValue)
+                }}
+                placeholder="Ex: Nuit 2 - Paul huilé, Sara reçoit +2 voix, garde protège Lina..."
+                style={{
+                  width: "100%",
+                  minHeight: 320,
+                  resize: "vertical",
+                  borderRadius: 14,
+                  border: "1px solid rgba(129,140,248,0.26)",
+                  background: "rgba(255,255,255,0.04)",
+                  color: "#e2e8f0",
+                  fontSize: 15,
+                  lineHeight: 1.55,
+                  padding: "14px 16px",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
+              />
+
+              <button
+                onClick={() => setHostNotesOpen(false)}
+                style={{ ...styles.primaryBtn, minHeight: 50 }}
+              >
+                Fermer les notes
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
     )
   }
